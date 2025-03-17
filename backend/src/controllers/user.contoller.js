@@ -1,19 +1,41 @@
 const userModel = require("../models/user.model")
 const { asyncHandler } = require("../utils/asyncHandler")
 const { validationResult } = require("express-validator");
-const { createUser } = require("../services/user.service")
-const { ApiError } = require("../utils/apiError");
-const { ApiResponse } = require("../utils/apiResponse")
+const { createUser, getUser } = require("../services/user.service")
+const { ApiError } = require("../utils/ApiError")
+const { ApiResponse } = require("../utils/ApiResponse")
 
 
-module.exports.registerUser = asyncHandler(async (req, res, next) => {
+module.exports.registerUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        // return next(new ApiError(400, "Validation Error", errors.array().map((error) => error.msg).join(",")));
-        return res.status(400).json(errors.array().map((error) => error.msg));
+        return res.status(400)
+            .json({ message: "Validation Error", errors: errors.array().map(error => error.msg) });
     }
     const { username, email, fullname, password } = req.body;
-    return res.status(201).json(new ApiResponse(201, { user: { username, email, fullname, password } }, "User created successfully"));
 
+    const existingUser = await getUser(email);
+    if (existingUser.length) return res.status(400).json("User already exists");
+
+    const options = {
+        httpOnly: true,
+        sameSit: "None",
+
+        
+    }
+    if (process.env.NODE_ENV === "production") {
+        options.secure = true;
+        options.sameSit = "Strict";
+        options.domain = process.env.DOMAIN;
+        // options.expires = new Date(Date.now() + process.env.COOKIE_EXPIRY);
+    }
+    const user = await createUser(email, username, fullname, password);
+    if (!user) throw new ApiError(500, "User not created");
+
+    const token = await user.generateAuthToken();
+    return res
+        .status(201)
+        .cookie("token", token, options)
+        .json(new ApiResponse(201, { user: user }, "User created successfully"));
 })
 
