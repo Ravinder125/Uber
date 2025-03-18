@@ -1,14 +1,24 @@
 # User API Documentation
 
+## Base URL
+All endpoints are prefixed with `/api/v1/users`
+
 ## Authentication
 Most endpoints require authentication via JWT token. Send the token as:
 - Cookie named "token", or
 - Authorization header: `Bearer <token>`
 
-## Endpoints
+## API Endpoints
 
 ### 1. Register User
-**POST** `/users/register`
+**POST** `/register`
+
+**Validation Rules:**
+- username: min 3 chars, lowercase only
+- email: valid email format
+- fullname.firstname: min 3 chars, trimmed
+- fullname.lastname: min 3 chars
+- password: min 8 chars
 
 **Request Body:**
 ```json
@@ -17,14 +27,14 @@ Most endpoints require authentication via JWT token. Send the token as:
     "email": "johndoe@example.com",
     "fullname": {
         "firstname": "John",
-        "middlename": "Robert",
+        "middlename": "Robert", // optional
         "lastname": "Doe"
     },
     "password": "securepass123"
 }
 ```
 
-**Success Response (201):**
+**Success Response:** `201 Created`
 ```json
 {
     "status": 201,
@@ -38,19 +48,31 @@ Most endpoints require authentication via JWT token. Send the token as:
                 "lastName": "Doe"
             },
             "createdAt": "2024-01-20T12:00:00.000Z"
-        },
-        "token": "jwt.token.here"
+        }
     },
     "message": "User created successfully"
 }
 ```
 
-**Error Responses:**
-- `400`: Validation errors or user exists
-- `500`: Server error
+**Error Response:**
+```json
+{
+    "message": "Validation Error",
+    "errors": [
+        "Username must be at least 3 characters long",
+        "Username must be in lowercase",
+        "Invalid Email"
+        // ... other validation errors
+    ]
+}
+```
 
 ### 2. Login User
-**POST** `/users/login`
+**POST** `/login`
+
+**Validation Rules:**
+- email: valid email format
+- password: min 8 chars
 
 **Request Body:**
 ```json
@@ -60,7 +82,7 @@ Most endpoints require authentication via JWT token. Send the token as:
 }
 ```
 
-**Success Response (200):**
+**Success Response:** `200 OK`
 ```json
 {
     "status": 200,
@@ -73,24 +95,23 @@ Most endpoints require authentication via JWT token. Send the token as:
                 "middleName": "Robert",
                 "lastName": "Doe"
             }
-        },
-        "token": "jwt.token.here"
+        }
     },
     "message": "User logged in successfully"
 }
 ```
 
-**Error Responses:**
-- `400`: Missing fields
-- `401`: Invalid credentials
-
 ### 3. Get User Profile
-**GET** `/users/profile`
+**GET** `/profile`
 
-**Headers Required:**
-- `Authorization: Bearer <token>`
+**Authentication:** Required (JWT Token)
 
-**Success Response (200):**
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+```
+
+**Success Response:** `200 OK`
 ```json
 {
     "status": 200,
@@ -101,23 +122,23 @@ Most endpoints require authentication via JWT token. Send the token as:
             "firstName": "John",
             "middleName": "Robert",
             "lastName": "Doe"
-        },
-        "createdAt": "2024-01-20T12:00:00.000Z"
+        }
     },
     "message": "User profile fetched successfully"
 }
 ```
 
-**Error Response:**
-- `401`: Unauthorized
-
 ### 4. Logout User
-**GET** `/users/logout`
+**GET** `/logout`
 
-**Headers Required:**
-- `Authorization: Bearer <token>`
+**Authentication:** Required (JWT Token)
 
-**Success Response (200):**
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+```
+
+**Success Response:** `200 OK`
 ```json
 {
     "status": 200,
@@ -129,18 +150,32 @@ Most endpoints require authentication via JWT token. Send the token as:
 }
 ```
 
-**Error Response:**
-- `401`: Unauthorized
+## Common Error Responses
 
-## Validation Rules
-- Username: Minimum 3 characters, lowercase
-- Email: Valid email format
-- Password: Minimum 8 characters
-- First name: Minimum 3 characters
-- Last name: Minimum 3 characters
+### Validation Error (400)
+```json
+{
+    "message": "Validation Error",
+    "errors": ["Error message"]
+}
+```
+
+### Authentication Error (401)
+```json
+{
+    "message": "Unauthorized Access"
+}
+```
+
+### Server Error (500)
+```json
+{
+    "message": "Internal Server Error"
+}
+```
 
 ## Notes
-- All successful responses include a JWT token in cookies
-- Token is automatically cleared on logout
-- All dates are in ISO 8601 format
-- All responses follow the format: `{ status, data, message }`
+- All endpoints return JSON responses
+- Authentication uses JWT tokens
+- Tokens are sent via both cookies and Authorization header
+- All timestamps use ISO 8601 format
