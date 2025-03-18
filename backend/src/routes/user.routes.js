@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { body } = require("express-validator");
-const userController = require("../controllers/user.contoller");
-const authMiddleware = require("../middlewares/auth.middleware");
+const { body } = require('express-validator');
+const userController = require('../controllers/user.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 // search npm express validator
 
@@ -36,7 +36,5 @@ router.post('/login', [
 
 router.get('/profile', authMiddleware.authUser, userController.userProfile);
 router.get('/logout', authMiddleware.authUser, userController.logoutUser);
-
-
 
 module.exports = router;

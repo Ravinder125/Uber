@@ -1,0 +1,110 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+bcrypt = require('bcryptjs');
+jwt = require('jsonwebtoken');
+
+const captainSchema = new Schema({
+    fullName: {
+        firstName: {
+            type: String,
+            required: [true, 'First name is required'],
+            trim: true,
+            minlength: [3, 'First name must be atleast 3 characters long']
+        },
+        middleName: {
+            type: String,
+            trim: true,
+        },
+        lastName: {
+            type: String,
+            required: [true, 'First name is required'],
+            trim: true,
+            minlength: [3, 'First name must be atleast 3 characters long']
+        },
+    },
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        match: [/\S+@\S+\.\S+/, 'Please enter a valid email'],
+        unique: true,
+        index: true,
+        trim: true,
+        lowercase: [true, 'Email must be in lowercase']
+    },
+    password: {
+        type: String,
+        trim: true,
+        required: [true, 'Password is required'],
+        minlength: [8, 'Password must be atleast 8 characters long'],
+        maxlength: [50, 'Password cannot exceed above 50 characters'],
+        select: false
+    },
+    sockectId: {
+        type: String
+    },
+    phone: {
+        type: String,
+        required: [true, 'Phone number is required'],
+        match: [/^\d{10}$/, 'Please enter a valid phone number'],
+        unique: true,
+        index: true,
+        trim: true,
+        minlength: [10, 'Phone number must be 10 digit long'],
+        maxlength: [10, 'Phone number must not exceed 10 digit']
+    },
+    status: {
+        type: String,
+        enum: ["active", "inactive"],
+        default: 'inactive',
+        index: true,
+        required: [true, 'Status is required'],
+    },
+    vehicle: {
+        color: {
+            type: String,
+            required: [true, 'Vehicle color is required'],
+            trim: true,
+            minlength: [3, 'color must be at least 3 characters long']
+        },
+        plate: {
+            type: String,
+            required: [true, 'Vehicle plate is required'],
+            trim: true,
+            minlength: [3, 'Plate number must be 3 characters long']
+        },
+        capacity: {
+            type: Number,
+            required: [true, 'Vehicle capacity is required'],
+            min: [1, 'Vehicle capacity must be atleast 1']
+        },
+        vehicleType: {
+            type: String,
+            enum: ["car", "bike", "van", "auto"],
+            required: [true, 'Vehicle type is required']
+        }
+    },
+    location: {
+        lat: {
+            type: Number,
+        },
+        lng: {
+            type: Number,
+        }
+    }
+}, { timestamps: true });
+
+captainSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+})
+
+captainSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password);
+}
+
+captainSchema.methods.generateToken = function () {
+    return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
+}
+
+module.exports = mongoose.model('Captain', captainSchema);
