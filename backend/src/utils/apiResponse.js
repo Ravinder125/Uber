@@ -1,8 +1,8 @@
 class ApiResponse {
-    constructor(status, message, data) {
+    constructor(status, data, message) {
         this.status = status;
-        this.message = message;
         this.data = data;
+        this.message = message;
     };
 };
 

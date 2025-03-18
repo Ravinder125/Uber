@@ -1,11 +1,12 @@
-const userModel = require('../models/user.model');
-const { ApiError } = require("../utils/ApiError");
+const { model } = require("mongoose");
+const userModel = require("../models/user.model");
+
 
 module.exports.createUser = async (email, username, fullname, password,) => {
     try {
 
         if (!username || !fullname || !password || !email) {
-            throw new ApiError(400, "All fields are required");
+            throw new res.status(400).json({ message: "All fields are required" });
         }
 
         const newUser = await userModel.create({
@@ -27,10 +28,11 @@ module.exports.createUser = async (email, username, fullname, password,) => {
 
 module.exports.getUser = async (email) => {
     try {
-        const user = await userModel.find({ email }).select("-password");
+        const user = await userModel.findOne({ email }).select("+password");
         console.log(user);
         return user;
     } catch (error) {
         throw error;
     }
 }
+
