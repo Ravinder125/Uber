@@ -4,7 +4,7 @@ const captainController = require('../controllers/captain.controller')
 
 const router = express.Router();
 
-router.post('/'[
+router.post('/register', [
     body('fullname.firstname')
         .isLength({ min: 3 }).withMessage('First name must be at least 3 characters long'),
     body('fullname.lastname')
