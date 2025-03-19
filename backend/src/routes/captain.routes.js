@@ -1,6 +1,7 @@
 const express = require('express')
 const { body } = require('express-validator')
-const captainController = require('../controllers/captain.controller')
+const captainController = require('../controllers/captain.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
@@ -12,9 +13,9 @@ router.post('/register', [
     body('email')
         .isEmail().withMessage('Invalid email'),
     body('password')
-        .isLength({ min: 8 }, { max: 50 }).withMessage('Password must be at least 8 character long and must not exceed 50 characers'),
+        .isLength({ min: 8 }).withMessage('Password must be at least 8 character long'),
     body('phone')
-        .isLength({ min: 10 }, { max: 10 }).withMessage('Phone must be 10 digits long'),
+        .isLength({ min: 10 }, { max: 10 }).withMessage('Phone must be only 10 digits long'),
     body('status')
         .isIn(["active", "inactive"]).withMessage('Status should be either active or inactive'),
     body('vehicle.color')
@@ -29,5 +30,15 @@ router.post('/register', [
 ],
     captainController.registerCaptain
 )
+router.post('/login', [
+    body('email')
+        .isEmail().withMessage('Invalid email'),
+    body('password')
+        .isLength({ min: 8 }, { max: 50 }).withMessage('Password must be at least 8 characters long')
+],
+    captainController.loginCaptain
+)
+router.get('/logout', authMiddleware.authCaptain, captainController.logoutCaptain)
+router.get('/profile', authMiddleware.authCaptain, captainController.captainProfile)
 
 module.exports = router

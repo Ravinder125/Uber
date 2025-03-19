@@ -36,7 +36,6 @@ const captainSchema = new Schema({
         trim: true,
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be atleast 8 characters long'],
-        maxlength: [50, 'Password cannot exceed above 50 characters'],
         select: false
     },
     sockectId: {
@@ -100,10 +99,11 @@ captainSchema.pre('save', async function (next) {
 })
 
 captainSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password);
+    const user = await this.constructor.findById(this._id).select('+password')
+    return await bcrypt.compare(password, user.password);
 }
 
-captainSchema.methods.generateToken = function () {
+captainSchema.methods.generateAuthToken = function () {
     return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
 }
 

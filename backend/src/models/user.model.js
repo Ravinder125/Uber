@@ -43,7 +43,6 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters long'],
-        maxlength: [50, 'Password cannot exceed 50 characters'],
         select: false,
         trim: true,
     },
@@ -68,9 +67,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 
     const user = await this.constructor.findById(this._id).select('+password');
     if (!user) throw new Error('User not found');
-    console.log(user)
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log(isMatch);
     return isMatch
 };
 
