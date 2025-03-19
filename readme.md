@@ -1,16 +1,18 @@
-# User API Documentation
+# Backend API Documentation
+
+## Base URLs
+- Users API: `/api/v1/users`
+- Captains API: `/api/v1/captains`
 
 ## Authentication
-Most endpoints require authentication via JWT token. Send the token as:
-- Cookie named "token", or
-- Authorization header: `Bearer <token>`
+All protected endpoints require JWT token via:
+- Cookie: `token`
+- Header: `Authorization: Bearer <token>`
 
-## Endpoints
-
-app.use("/api/v1/users", userRoutes) 
+## User Endpoints
 
 ### 1. Register User
-**POST** `/users/register`
+**POST** `/api/v1/users/register`
 
 **Request Body:**
 ```json
@@ -48,11 +50,11 @@ app.use("/api/v1/users", userRoutes)
 ```
 
 **Error Responses:**
-- `400`: Validation errors or user exists
-- `500`: Server error
+- `400`: Validation errors or user already exists
+- `500`: Internal server error - User not created
 
 ### 2. Login User
-**POST** `/users/login`
+**POST** `/api/v1/users/login`
 
 **Request Body:**
 ```json
@@ -83,11 +85,11 @@ app.use("/api/v1/users", userRoutes)
 ```
 
 **Error Responses:**
-- `400`: Missing fields
-- `401`: Invalid credentials
+- `400`: Missing email or password
+- `401`: Invalid email or password
 
 ### 3. Get User Profile
-**GET** `/users/profile`
+**GET** `/api/v1/users/profile`
 
 **Headers Required:**
 - `Authorization: Bearer <token>`
@@ -114,7 +116,7 @@ app.use("/api/v1/users", userRoutes)
 - `401`: Unauthorized
 
 ### 4. Logout User
-**GET** `/users/logout`
+**GET** `/api/v1/users/logout`
 
 **Headers Required:**
 - `Authorization: Bearer <token>`
@@ -134,22 +136,10 @@ app.use("/api/v1/users", userRoutes)
 **Error Response:**
 - `401`: Unauthorized
 
-## Validation Rules
-- Username: Minimum 3 characters, lowercase
-- Email: Valid email format
-- Password: Minimum 8 characters
-- First name: Minimum 3 characters
-- Last name: Minimum 3 characters
-
-# Captain API Documentation
-
-## Base URL
-All captain endpoints are prefixed with `/api/v1/captains`
-
-## Endpoints
+## Captain Endpoints
 
 ### 1. Register Captain
-**POST** `/register`
+**POST** `/api/v1/captains/register`
 
 **Validation Rules:**
 - firstname, lastname: min 3 chars
@@ -192,27 +182,30 @@ All captain endpoints are prefixed with `/api/v1/captains`
 {
     "status": 200,
     "data": {
-        "fullName": {
-            "firstName": "John",
-            "middleName": "Robert",
-            "lastName": "Smith"
+        "newCaptain": {
+            "fullName": {
+                "firstName": "John",
+                "middleName": "Robert",
+                "lastName": "Smith"
+            },
+            "email": "john.smith@example.com",
+            "phone": "1234567890",
+            "status": "active",
+            "vehicle": {
+                "color": "Black",
+                "plate": "ABC123",
+                "capacity": 4,
+                "vehicleType": "car"
+            },
+            "location": {
+                "lat": 12.9716,
+                "lng": 77.5946
+            },
+            "createdAt": "2024-01-20T12:00:00.000Z"
         },
-        "email": "john.smith@example.com",
-        "phone": "1234567890",
-        "status": "active",
-        "vehicle": {
-            "color": "Black",
-            "plate": "ABC123",
-            "capacity": 4,
-            "vehicleType": "car"
-        },
-        "location": {
-            "lat": 12.9716,
-            "lng": 77.5946
-        },
-        "createdAt": "2024-01-20T12:00:00.000Z"
+        "token": "jwt.token.here"
     },
-    "message": "Captain is successfully created"
+    "message": "Captain successfully created"
 }
 ```
 
@@ -229,22 +222,139 @@ All captain endpoints are prefixed with `/api/v1/captains`
 }
 ```
 
-## Captain Model Fields
-- **fullName**: Object (firstName, middleName, lastName)
-- **email**: String (unique, required)
-- **password**: String (8-50 chars, hashed)
-- **phone**: String (10 digits, unique)
-- **status**: String (active/inactive)
-- **vehicle**: Object
-  - color: String (min 3 chars)
-  - plate: String (min 3 chars)
-  - capacity: Number (min 1)
-  - vehicleType: String (car/bike/van/auto)
-- **location**: Object (lat, lng)
-- **socketId**: String (for real-time tracking)
+### 2. Login Captain
+**POST** `/api/v1/captains/login`
 
-## Notes
-- All successful responses include a JWT token in cookies
-- Token is automatically cleared on logout
-- All dates are in ISO 8601 format
-- All responses follow the format: `{ status, data, message }`
+**Request Body:**
+```json
+{
+    "email": "john.smith@example.com",
+    "password": "securepass123"
+}
+```
+
+**Success Response (200):**
+```json
+{
+    "status": 200,
+    "data": {
+        "captain": {
+            "fullName": {
+                "firstName": "John",
+                "lastName": "Smith"
+            },
+            "email": "john.smith@example.com",
+            "phone": "1234567890",
+            "status": "active",
+            "vehicle": {
+                "color": "Black",
+                "plate": "ABC123",
+                "capacity": 4,
+                "vehicleType": "car"
+            }
+        },
+        "token": "jwt.token.here"
+    },
+    "message": "Captain successfully logged in"
+}
+```
+
+**Error Responses:**
+- `400`: Missing email/password or invalid credentials
+
+### 3. Get Captain Profile
+**GET** `/api/v1/captains/profile`
+
+**Headers Required:**
+- `Authorization: Bearer <token>`
+
+**Success Response (200):**
+```json
+{
+    "status": 200,
+    "data": {
+        "captain": {
+            "fullName": {
+                "firstName": "John",
+                "lastName": "Smith"
+            },
+            "email": "john.smith@example.com",
+            "status": "active",
+            "vehicle": {
+                "color": "Black",
+                "plate": "ABC123",
+                "capacity": 4,
+                "vehicleType": "car"
+            },
+            "location": {
+                "lat": 12.9716,
+                "lng": 77.5946
+            }
+        }
+    },
+    "message": "Captain profile fetched successfully"
+}
+```
+
+### 4. Logout Captain
+**GET** `/api/v1/captains/logout`
+
+**Headers Required:**
+- `Authorization: Bearer <token>`
+
+**Success Response (200):**
+```json
+{
+    "status": 200,
+    "data": {
+        "blacklistToken": {
+            "token": "previous.jwt.token",
+            "createdAt": "2024-01-20T12:00:00.000Z"
+        }
+    },
+    "message": "Captain successfully logged out"
+}
+```
+
+## Error Responses
+
+### Validation Error (400)
+```json
+{
+    "message": "Validation Error",
+    "errors": [
+        "Field specific error message"
+    ]
+}
+```
+
+### Authentication Error (401)
+```json
+{
+    "message": "Unauthorized request"
+}
+```
+
+## Security Features
+- Password hashing using bcrypt
+- JWT token blacklisting on logout
+- Token expiry management
+- HTTP-only cookies for token storage
+- Input validation and sanitization
+
+## Technical Notes
+1. All tokens expire as per JWT_EXPIRY env variable
+2. Blacklisted tokens are automatically removed after 24 hours
+3. Passwords are not returned in responses
+4. All successful auth responses include both cookie and token in response
+
+## Authentication Details
+- Tokens are provided both as HTTP-only cookies and in response body
+- Token options:
+  - httpOnly: true
+  - secure: true (in production)
+  - sameSite: 'None'
+- Token blacklisting is implemented for logout
+- Authorization can be provided via:
+  - Cookie: `token`
+  - Header: `Authorization: Bearer <token>`

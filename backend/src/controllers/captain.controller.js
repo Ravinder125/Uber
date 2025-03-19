@@ -15,7 +15,7 @@ const generateAuthToken = async (captainId, res) => {
         sameSite: 'None',
     };
 
-    return res.cookie('token', token, options);
+    return { options, token }
 };
 
 module.exports.registerCaptain = asyncHandler(async (req, res) => {
@@ -30,9 +30,10 @@ module.exports.registerCaptain = asyncHandler(async (req, res) => {
     if (existingCaptain) return res.status(400).json({ message: 'Captain already exists' });
     const newCaptain = await createCaptain(fullname, email, password, phone, status, vehicle, location);
 
-    await generateAuthToken(newCaptain._id, res);
+    const { options, token } = await generateAuthToken(newCaptain._id);
     return res.status(200)
-        .json(new ApiResponse(200, { newCaptain, token }, 'Captain is successfully created'));
+        .cookie('token', token, options)
+        .json(new ApiResponse(200, { newCaptain, token }, 'Captain successfully created'));
 });
 
 module.exports.loginCaptain = asyncHandler(async (req, res) => {
@@ -49,8 +50,10 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    await generateAuthToken(captain._id, res);
-    return res.status(200).json(new ApiResponse(200, captain, 'Captain logged in successfully'));
+    const { options, token } = await generateAuthToken(captain._id);
+    return res.status(200)
+        .cookie('token', token, options)
+        .json(new ApiResponse(200, { captain, token }, 'Captain successfully logged in'));
 });
 
 module.exports.logoutCaptain = asyncHandler(async (req, res) => {
