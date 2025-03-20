@@ -5,7 +5,7 @@ const captainModel = require('../models/captain.model');
 const blacklistTokenModel = require('../models/blacklistToken.model');
 const { ApiResponse } = require('../utils/ApiResponse');
 
-const UNAUTHORIZED_RESPONSE = ApiResponse.error('Unauthorized request', 'Unauthorized request');
+const UNAUTHORIZED_RESPONSE = ApiResponse.error(401, 'Unauthorized request', 'Unauthorized request');
 const authMiddleware = (model, userType) => asyncHandler(async (req, res, next) => {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
     if (!token) {
