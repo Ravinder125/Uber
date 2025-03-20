@@ -1,5 +1,18 @@
 # Backend API Documentation
 
+## API Response Format
+All endpoints use a consistent response structure via ApiResponse:
+
+```json
+{
+    "success": true|false,
+    "status": "<http_status_code>",
+    "data": null|{},
+    "error": [],
+    "message": "Response message"
+}
+```
+
 ## Base URLs
 - Users API: `/api/v1/users`
 - Captains API: `/api/v1/captains`
@@ -31,6 +44,7 @@ All protected endpoints require JWT token via:
 **Success Response (201):**
 ```json
 {
+    "success": true,
     "status": 201,
     "data": {
         "user": {
@@ -45,13 +59,21 @@ All protected endpoints require JWT token via:
         },
         "token": "jwt.token.here"
     },
+    "error": [],
     "message": "User created successfully"
 }
 ```
 
-**Error Responses:**
-- `400`: Validation errors or user already exists
-- `500`: Internal server error - User not created
+**Error Response (400):**
+```json
+{
+    "success": false,
+    "status": 400,
+    "data": null,
+    "error": ["User already exists"],
+    "message": "Registration failed"
+}
+```
 
 ### 2. Login User
 **POST** `/api/v1/users/login`
@@ -67,6 +89,7 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "user": {
@@ -80,13 +103,21 @@ All protected endpoints require JWT token via:
         },
         "token": "jwt.token.here"
     },
+    "error": [],
     "message": "User logged in successfully"
 }
 ```
 
-**Error Responses:**
-- `400`: Missing email or password
-- `401`: Invalid email or password
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Invalid email or password"],
+    "message": "Authentication failed"
+}
+```
 
 ### 3. Get User Profile
 **GET** `/api/v1/users/profile`
@@ -97,6 +128,7 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "username": "johndoe",
@@ -108,12 +140,21 @@ All protected endpoints require JWT token via:
         },
         "createdAt": "2024-01-20T12:00:00.000Z"
     },
+    "error": [],
     "message": "User profile fetched successfully"
 }
 ```
 
-**Error Response:**
-- `401`: Unauthorized
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Unauthorized"],
+    "message": "Unauthorized"
+}
+```
 
 ### 4. Logout User
 **GET** `/api/v1/users/logout`
@@ -124,17 +165,27 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "username": "johndoe",
         "email": "johndoe@example.com"
     },
+    "error": [],
     "message": "User logged out successfully"
 }
 ```
 
-**Error Response:**
-- `401`: Unauthorized
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Unauthorized"],
+    "message": "Unauthorized"
+}
+```
 
 ## Captain Endpoints
 
@@ -177,10 +228,11 @@ All protected endpoints require JWT token via:
 }
 ```
 
-**Success Response (200):**
+**Success Response (201):**
 ```json
 {
-    "status": 200,
+    "success": true,
+    "status": 201,
     "data": {
         "newCaptain": {
             "fullName": {
@@ -205,20 +257,22 @@ All protected endpoints require JWT token via:
         },
         "token": "jwt.token.here"
     },
+    "error": [],
     "message": "Captain successfully created"
 }
 ```
 
-**Error Responses:**
-- `400`: Validation errors or captain already exists
+**Error Response (400):**
 ```json
 {
-    "message": "Validation error",
+    "success": false,
+    "status": 400,
+    "data": null,
     "error": [
         "First name must be at least 3 characters long",
-        "Phone must be 10 digits long",
-        "Vehicle type must be car, bike, van or auto"
-    ]
+        "Phone must be 10 digits long"
+    ],
+    "message": "Validation error"
 }
 ```
 
@@ -236,6 +290,7 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "captain": {
@@ -255,12 +310,21 @@ All protected endpoints require JWT token via:
         },
         "token": "jwt.token.here"
     },
+    "error": [],
     "message": "Captain successfully logged in"
 }
 ```
 
-**Error Responses:**
-- `400`: Missing email/password or invalid credentials
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Invalid email or password"],
+    "message": "Authentication failed"
+}
+```
 
 ### 3. Get Captain Profile
 **GET** `/api/v1/captains/profile`
@@ -271,6 +335,7 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "captain": {
@@ -292,7 +357,19 @@ All protected endpoints require JWT token via:
             }
         }
     },
+    "error": [],
     "message": "Captain profile fetched successfully"
+}
+```
+
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Unauthorized"],
+    "message": "Unauthorized"
 }
 ```
 
@@ -305,6 +382,7 @@ All protected endpoints require JWT token via:
 **Success Response (200):**
 ```json
 {
+    "success": true,
     "status": 200,
     "data": {
         "blacklistToken": {
@@ -312,37 +390,47 @@ All protected endpoints require JWT token via:
             "createdAt": "2024-01-20T12:00:00.000Z"
         }
     },
+    "error": [],
     "message": "Captain successfully logged out"
 }
 ```
 
-## Error Responses
-
-### Validation Error (400)
+**Error Response (401):**
 ```json
 {
-    "message": "Validation Error",
-    "errors": [
-        "Field specific error message"
-    ]
+    "success": false,
+    "status": 401,
+    "data": null,
+    "error": ["Unauthorized"],
+    "message": "Unauthorized"
 }
 ```
 
-### Authentication Error (401)
+## Common Error Responses
+
+### Token Errors
 ```json
 {
-    "message": "Unauthorized request"
+    "success": false,
+    "status": 400,
+    "data": null,
+    "error": ["No token provided"],
+    "message": "Token error"
 }
 ```
 
-## Security Features
-- Password hashing using bcrypt
-- JWT token blacklisting on logout
-- Token expiry management
-- HTTP-only cookies for token storage
-- Input validation and sanitization
+### Server Errors
+```json
+{
+    "success": false,
+    "status": 500,
+    "data": null,
+    "error": ["Error occurred while processing request"],
+    "message": "Internal server error"
+}
+```
 
-## Technical Notes
+## Technical Notes & Security Features
 1. All tokens expire as per JWT_EXPIRY env variable
 2. Blacklisted tokens are automatically removed after 24 hours
 3. Passwords are not returned in responses
