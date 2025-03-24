@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+button {
+    cursor: pointer;
+}
+
+input::placeholder {
+    font-size: small;
+    color: gray;
+}
