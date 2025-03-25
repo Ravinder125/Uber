@@ -16,37 +16,28 @@ const CaptainLogin = () => {
         '🇦🇺': '+61',
     };
 
-    // const setCode = (e) => {
-    //     setPhoneCode(e.target.value); // Update state with selected value
-    //     console.log(e.target.value); // Log the new value immediately
-    // };
-
     const toggleEmailToNumber = () => {
         setToggle(prev => prev === 'number' ? 'email' : 'number');
         toggle === 'number' ? setPhoneNumber('') : setEmail('')
         console.log({ email, password, phoneCode, phoneNumber })
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email) {
-            setFormData({ phoneNumber: phoneCode + phoneNumber, password })
-        } else {
-            setFormData({ email, password })
+        const loginData = toggle === 'email'
+            ? { email, password }
+            : { phoneNumber: phoneCode + phoneNumber, password };
 
+        try {
+            // Add captain login API call here
+            console.log('Captain Login Data:', loginData);
+        } catch (error) {
+            setErrors({ submit: error.message });
         }
-
-        console.log(FormData)
-        console.log('Form submitted');
-
-        setEmail('')
-        setPhoneNumber('')
-        setPhoneCode('')
-        setPassword('')
     };
 
     return (
-        <div>
+        <div className='flex h-screen justify-center items-center'>
             <div className="p-6 h-screen flex gap-10 flex-col ">
                 <img
                     src="./uber-logo.png"
