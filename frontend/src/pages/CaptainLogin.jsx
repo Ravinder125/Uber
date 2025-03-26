@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 
 const CaptainLogin = () => {
     const [FormData, setFormData] = useState({})
-    const [phoneCode, setPhoneCode] = useState('+91'); // Default value for better UX
     const [toggle, setToggle] = useState('number'); // Use consistent casing for setToggle
+
     const [email, setEmail] = useState('')
+    const [phoneCode, setPhoneCode] = useState('+91'); // Default value for better UX
     const [phoneNumber, setPhoneNumber] = useState('')
     const [password, setPassword] = useState('')
 
@@ -27,7 +28,8 @@ const CaptainLogin = () => {
         const loginData = toggle === 'email'
             ? { email, password }
             : { phoneNumber: phoneCode + phoneNumber, password };
-
+        setFormData(loginData);
+        console.log(FormData)
         try {
             // Add captain login API call here
             console.log('Captain Login Data:', loginData);
@@ -37,8 +39,8 @@ const CaptainLogin = () => {
     };
 
     return (
-        <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 h-screen flex gap-10 flex-col ">
+        <div className='flex h-screen w-full justify-center items-center'>
+            <div className="p-6 w-96  sm:bg-gray-100  flex gap-10 flex-col ">
                 <img
                     src="./uber-logo.png"
                     alt="uber-logo-captain"

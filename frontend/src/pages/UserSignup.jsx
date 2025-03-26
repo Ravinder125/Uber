@@ -10,7 +10,7 @@ const UserSignup = () => {
             middlename: '',
             lastname: ''
         },
-        phoneNumber: '',
+        tel: '',
         password: ''
     });
 
@@ -24,7 +24,6 @@ const UserSignup = () => {
         '🇦🇺': '+61',
     };
 
-    // Handle Input Change
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
@@ -42,9 +41,16 @@ const UserSignup = () => {
                 [name]: value
             }));
         }
+
+        // Clear the error if the field is cleared
+        if (value === '') {
+            setErrors((prev) => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
     };
 
-    // Username Generator
     const generateUsername = (firstname) => {
         if (!firstname) return null;
 
@@ -52,7 +58,6 @@ const UserSignup = () => {
         return `${firstname.toLowerCase()}${random}`;
     };
 
-    // Form Reset Function
     const resetForm = () => {
         setFormData({
             username: '',
@@ -62,12 +67,14 @@ const UserSignup = () => {
                 middlename: '',
                 lastname: ''
             },
-            phoneNumber: '',
+            tel: '',
             password: ''
         });
+
+        // Clear all errors on form reset
+        setErrors({});
     };
 
-    // Form Submit Handler
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -79,133 +86,141 @@ const UserSignup = () => {
             const updatedFormData = {
                 ...formData,
                 username,
-                phoneNumber: `${phoneCode}${formData.phoneNumber}`
+                tel: `${phoneCode}${formData.tel}`
             };
 
             setFormData(updatedFormData);
 
             console.log('Updated Form Data:', updatedFormData);
 
-            // Reset the form after a short delay to ensure username is properly set
             setTimeout(() => {
                 resetForm();
             }, 0);
         }
     };
 
-    // Email Validation
-    const validateEmail = (e) => {
+    const validateForm = (e) => {
+        const { name, value } = e.target;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(e.target.value)) {
-            setErrors((prev) => ({
-                ...prev,
-                email: "Please enter a valid email"
-            }));
-            return false;
+
+        const newErrors = { ...errors };
+
+        // Clear the error if the field is empty
+        if (!value.trim()) {
+            newErrors[name] = '';
+        } else {
+            switch (name) {
+                case 'email':
+                    newErrors.email = !emailRegex.test(value) ? 'Please enter a valid email' : '';
+                    break;
+                case 'firstname':
+                    newErrors.firstname = value.length < 3 ? 'First name must be at least 3 characters long' : '';
+                    break;
+                case 'middlename':
+                    newErrors.middlename = value.length < 3 ? 'Middle name must be at least 3 characters long' : '';
+                    break;
+                case 'lastname':
+                    newErrors.lastname = value.length < 3 ? 'Last name must be at least 3 characters long' : '';
+                    break;
+                case 'tel':
+                    newErrors.tel = !/^\d{10}$/.test(value) ? 'Phone number must be 10 digits long' : '';
+                    break;
+                case 'password':
+                    newErrors.password = value.length < 8 ? 'Password must be at least 8 characters long' : '';
+                    break;
+                default:
+                    break;
+            }
         }
-        setErrors((prev) => ({ ...prev, email: '' }));
-        return true;
+
+        setErrors(newErrors);
     };
 
     return (
         <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 w-96 sm:bg-gray-100  flex flex-col rounded-sm gap-10 justify-center items-center">
+            <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-10 justify-center items-center">
                 <img src="./uber-logo.png" alt="uber-logo-captain" className='w-18' />
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-
                     {/* Email Section */}
                     <div className='flex flex-col gap-2'>
-                        <label htmlFor="email" className="font-semibold text-lg">Enter your email</label>
                         <input
                             type="email"
                             name="email"
-                            placeholder="example@gmail.com"
+                            placeholder="Enter your email - example@gmail.com"
                             className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
                             value={formData.email}
-                            onChange={handleInputChange}
-                            onBlur={validateEmail}
                             required
+                            onChange={handleInputChange}
+                            onBlur={validateForm}
                         />
                         {errors.email && <div className='text-red-600 text-sm'>{errors.email}</div>}
                     </div>
 
                     {/* Name Section */}
-                    <div className='flex flex-col gap-2'>
-                        <label htmlFor="name" className="font-semibold text-lg">Enter your Name</label>
-                        <div className='flex gap-2'>
-                            <input
-                                type="text"
-                                name="firstname"
-                                placeholder="First name"
-                                className="bg-gray-200 rounded-sm p-2 w-1/3"
-                                value={formData.fullname.firstname}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="middlename"
-                                placeholder="Middle name"
-                                className="bg-gray-200 rounded-sm p-2 w-1/3"
-                                value={formData.fullname.middlename}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="lastname"
-                                placeholder="Last name"
-                                className="bg-gray-200 rounded-sm p-2 w-1/3"
-                                value={formData.fullname.lastname}
-                                onChange={handleInputChange}
-                                required
-                            />
+                    <div className='flex flex-col gap-1'>
+                        <div className='flex gap-1'>
+                            {['firstname', 'middlename', 'lastname'].map((name) => (
+                                <input
+                                    key={name}
+                                    type="text"
+                                    name={name}
+                                    placeholder={name}
+                                    className="bg-gray-200 rounded-sm p-2 w-1/3"
+                                    value={formData.fullname[name]}
+                                    required={name !== 'middlename'}  // Middle name is optional
+                                    onChange={handleInputChange}
+                                    onBlur={validateForm}
+                                />
+                            ))}
                         </div>
+                        <>
+                            {errors.firstname && <div className='text-red-600 text-sm'>{errors.firstname}</div>}
+                            {errors.middlename && <div className='text-red-600 text-sm'>{errors.middlename}</div>}
+                            {errors.lastname && <div className='text-red-600 text-sm'>{errors.lastname}</div>}
+                        </>
                     </div>
 
                     {/* Phone Section */}
-                    <div className='flex flex-col gap-2'>
-                        <label htmlFor="contact" className="font-semibold text-lg">Enter your phone number</label>
-                        <div className="flex gap-3">
-                            <select
-                                name="country"
-                                className="bg-gray-200 rounded-sm text-center w-1/3"
-                                value={phoneCode}
-                                onChange={(e) => setPhoneCode(e.target.value)}
-                                required
-                            >
-                                {Object.keys(phoneCodes).map((flag) => (
-                                    <option key={flag} value={phoneCodes[flag]}>
-                                        {flag} {phoneCodes[flag]}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type="tel"
-                                name="phoneNumber"
-                                placeholder="123-456-7890"
-                                className="bg-gray-200 rounded-sm p-2 placeholder:text-gray-800 w-2/3"
-                                value={formData.phoneNumber}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
+                    <div className="flex gap-2">
+                        <select
+                            name="country"
+                            className="bg-gray-200 p-2 rounded-sm text-center "
+                            value={phoneCode}
+                            onChange={(e) => setPhoneCode(e.target.value)}
+                            required
+                        >
+                            {Object.keys(phoneCodes).map((flag) => (
+                                <option key={flag} value={phoneCodes[flag]}>
+                                    {flag} {phoneCodes[flag]}
+                                </option>
+                            ))}
+                        </select>
+                        <input
+                            type="tel"
+                            name="tel"
+                            placeholder="Enter your tel. number - 123-456-7890"
+                            className="bg-gray-200 rounded-sm p-2 placeholder:text-gray-800 w-9/12"
+                            value={formData.tel}
+                            onChange={handleInputChange}
+                            onBlur={validateForm}
+                            required
+                        />
+                        {errors.tel && <div className='text-red-600 text-sm'>{errors.tel}</div>}
                     </div>
 
                     {/* Password Section */}
-                    <div className='flex flex-col gap-2'>
-                        <label htmlFor="password" className="font-semibold text-lg">Enter your password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            required
-                        />
-                    </div>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password - paglu123@"
+                        className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        onBlur={validateForm}
+                        required
+                    />
+                    {errors.password && <div className='text-red-600 text-sm'>{errors.password}</div>}
 
                     <button
                         type="submit"
