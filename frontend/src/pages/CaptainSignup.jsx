@@ -25,7 +25,20 @@ const CaptainSignup = () => {
     });
 
     const [phoneCode, setPhoneCode] = useState('+91');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState({
+        email: '',
+        fullname: {
+            firstname: '',
+            middlename: '',
+            lastname: ''
+        },
+        phoneNumber: '',
+        password: '',
+        vehicle: {
+            color: '',
+            plate: '',
+        },
+    });
 
     const phoneCodes = {
         '🇮🇳': '+91',
@@ -34,61 +47,41 @@ const CaptainSignup = () => {
         '🇦🇺': '+61',
     };
 
-    const validateForm = (e) => {
-        const newErrors = {};
-        const { name, value } = e.target;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (value?.trim()) {
-            switch (name) {
-                case 'email':
-                    if (!emailRegex.test(value)) {
-                        newErrors.email = 'Please enter a valid email';
-                    }
-                    break;
-                case 'firstname':
-                    if (value.length < 3) {
-                        newErrors.firstname = 'First name must be at least 3 characters';
-                    }
-                    break;
-                case 'lastname':
-                    if (value.length < 3) {
-                        newErrors.lastname = 'Last name must be at least 3 characters';
-                    }
-                    break;
-                case 'phoneNumber':
-                    if (value.length !== 10) {
-                        newErrors.phoneNumber = 'Phone number must be 10 digits';
-                    }
-                    break;
-                case 'password':
-                    if (value.length < 8) {
-                        newErrors.password = 'Password must be at least 8 characters';
-                    }
-                    break;
-                case 'vehicle.color':
-                    if (value.length < 3) {
-                        newErrors.vehicleColor = 'Color must be at least 3 characters';
-                    }
-                    break;
-                case 'vehicle.plate':
-                    if (value.length < 3) {
-                        newErrors.vehiclePlate = 'Plate number must be at least 3 characters';
-                    }
-                    break;
-                default:
-                    break;
-            }
-            setErrors(prevErrors => ({ ...prevErrors, ...newErrors }));
-        } else {
-            setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }))
+    const validateField = (name, value) => {
+        if (!value?.trim()) return '';
+        
+        switch (name) {
+            case 'email':
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
+                    ? '' 
+                    : 'Please enter a valid email';
+            case 'password':
+                return value.length >= 8 
+                    ? '' 
+                    : 'Password must be at least 8 characters';
+            case 'phoneNumber':
+                return /^\d{10}$/.test(value) 
+                    ? '' 
+                    : 'Phone number must be 10 digits';
+            case 'firstname':
+            case 'lastname':
+                return value.length >= 3 
+                    ? '' 
+                    : `${name} must be at least 3 characters`;
+            case 'vehicle.color':
+            case 'vehicle.plate':
+                return value.length >= 3 
+                    ? '' 
+                    : `${name.split('.')[1]} must be at least 3 characters`;
+            default:
+                return '';
         }
-
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-
+        
+        // Update form data
         if (name.includes('vehicle.')) {
             const [, field] = name.split('.');
             setFormData(prev => ({
@@ -112,19 +105,25 @@ const CaptainSignup = () => {
                 [name]: value
             }));
         }
+
+        // Validate field
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm(e)) {
-            return;
-        }
+        console.log(e.target.value)
 
         const submitData = {
             ...formData,
             phoneNumber: phoneCode + formData.phoneNumber
         };
+        console.log('Errors:', errors)
 
         try {
             const response = await fetch('/api/v1/captains/register', {
@@ -150,8 +149,8 @@ const CaptainSignup = () => {
 
     return (
         <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-10">
-                <img src="./uber-logo.png" alt="uber-logo" className='w-18' />
+            <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-5 ">
+                <img src="./uber-logo.png" alt="uber-logo" className='w-18 self-center' />
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     {/* Personal Details Section */}
@@ -165,10 +164,9 @@ const CaptainSignup = () => {
                                     key={field}
                                     type="text"
                                     name={field}
-                                    placeholder={`${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                                    placeholder={`${field}`}
                                     value={formData.fullname[field]}
                                     onChange={handleInputChange}
-                                    onBlur={validateForm}
                                     className='bg-gray-200 p-2 rounded-sm w-1/2'
                                     required={field !== 'middlename'}
                                 />
@@ -184,7 +182,6 @@ const CaptainSignup = () => {
                             placeholder='Enter your email'
                             value={formData.email}
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                             className='bg-gray-200 p-2 rounded-sm'
                             required
                         />
@@ -209,7 +206,6 @@ const CaptainSignup = () => {
                                 placeholder='Phone number'
                                 value={formData.phoneNumber}
                                 onChange={handleInputChange}
-                                onBlur={validateForm}
                                 className='bg-gray-200 p-2 rounded-sm w-9/12'
                                 required
                             />
@@ -223,7 +219,6 @@ const CaptainSignup = () => {
                             placeholder='Enter your password'
                             value={formData.password}
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                             className='bg-gray-200 p-2 rounded-sm'
                             required
                         />
@@ -239,11 +234,10 @@ const CaptainSignup = () => {
                             placeholder="Vehicle Color"
                             value={formData.vehicle.color}
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                             className='bg-gray-200 p-2 rounded-sm'
                             required
                         />
-                        {errors.vehicleColor && <span className="text-red-500 text-sm">{errors.vehicleColor}</span>}
+                        {errors.vehicle.color && <span className="text-red-500 text-sm">{errors.vehicle.color}</span>}
 
                         <input
                             type="text"
@@ -251,17 +245,15 @@ const CaptainSignup = () => {
                             placeholder="Vehicle Plate Number"
                             value={formData.vehicle.plate}
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                             className='bg-gray-200 p-2 rounded-sm'
                             required
                         />
-                        {errors.vehiclePlate && <span className="text-red-500 text-sm">{errors.vehiclePlate}</span>}
+                        {errors.vehicle.plate && <span className="text-red-500 text-sm">{errors.vehicle.plate}</span>}
 
                         <select
                             name="vehicle.type"
                             value={formData.vehicle.type}
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                             className='bg-gray-200 p-2 rounded-sm'
                             required
                         >
@@ -275,14 +267,15 @@ const CaptainSignup = () => {
                     {errors.submit && (
                         <div className="text-red-500 text-sm text-center">{errors.submit}</div>
                     )}
+                    <div className='flex flex-col'>
+                        <button type="submit" className="bg-black text-white py-2 rounded-sm font-bold">
+                            Register as Captain
+                        </button>
+                        <Link to='/captain-login' className='text-center text-sm'>
+                            Already a captain? <span className='text-blue-500'>Login here</span>
+                        </Link>
 
-                    <button type="submit" className="bg-black text-white py-2 rounded-sm font-bold">
-                        Register as Captain
-                    </button>
-
-                    <Link to='/captain-login' className='text-center text-sm'>
-                        Already a captain? <span className='text-blue-500'>Login here</span>
-                    </Link>
+                    </div>
                 </form>
 
                 <Link to='/signup' className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'>

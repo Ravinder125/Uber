@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const UserLogin = () => {
-    const [FormData, setFormData] = useState({})
-    const [phoneCode, setPhoneCode] = useState('+91'); // Default value for better UX
-    const [toggle, setToggle] = useState('number'); // Use consistent casing for setToggle
-    const [email, setEmail] = useState('')
-    const [phoneNumber, setPhoneNumber] = useState('')
-    const [password, setPassword] = useState('')
+    const [formData, setFormData] = useState({
+        email: '',
+        phoneNumber: '',
+        password: ''
+    });
+    const [loginMethod, setLoginMethod] = useState('email');
+    const [phoneCode, setPhoneCode] = useState('+91');
+    const [errors, setErrors] = useState({});
 
     const phoneCodes = {
         '🇮🇳': '+91',
@@ -16,59 +18,107 @@ const UserLogin = () => {
         '🇦🇺': '+61',
     };
 
-    const toggleEmailToNumber = () => {
-        setToggle(prev => prev === 'number' ? 'email' : 'number');
-        toggle === 'number' ? setPhoneNumber('') : setEmail('')
-        console.log({ email, password, phoneCode, phoneNumber })
+    const validateField = (name, value) => {
+        if (!value?.trim()) return '';
+        
+        switch (name) {
+            case 'email':
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
+                    ? '' 
+                    : 'Please enter a valid email';
+            case 'password':
+                return value.length >= 8 
+                    ? '' 
+                    : 'Password must be at least 8 characters';
+            case 'phoneNumber':
+                return /^\d{10}$/.test(value) 
+                    ? '' 
+                    : 'Phone number must be 10 digits';
+            default:
+                return '';
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+        // Validate on change
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
+
+    const toggleLoginMethod = () => {
+        setLoginMethod(prev => prev === 'email' ? 'phoneNumber' : 'email');
+        setFormData(prev => ({
+            ...prev,
+            email: '',
+            phoneNumber: ''
+        }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!email) {
-            setFormData({ phoneNumber: phoneCode + phoneNumber, password })
-        } else {
-            setFormData({ email, password })
+        const validationErrors = {};
+        Object.keys(formData).forEach(field => {
+            const error = validateField(field, formData[field]);
+            if (error) validationErrors[field] = error;
+        });
 
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
         }
 
-        console.log(FormData)
+        const finalData = loginMethod === 'email'
+            ? { email: formData.email, password: formData.password }
+            : { phoneNumber: phoneCode + formData.phoneNumber, password: formData.password };
+
+        console.log(finalData);
         console.log('Form submitted');
 
-        setEmail('')
-        setPhoneNumber('')
-        setPhoneCode('')
-        setPassword('')
+        setFormData({
+            email: '',
+            phoneNumber: '',
+            password: ''
+        });
+        setPhoneCode('+91');
+        setErrors({});
     };
 
     return (
-        <div>
-            <div className="p-6 h-screen flex gap-10 flex-col ">
+        <div className='p-6 h-screen flex items-center justify-center'>
+            <div className="p-6 w-96 flex sm:bg-gray-100 justify-center gap-10 flex-col ">
                 <img
                     src="./uber-logo.png"
                     alt="uber-logo-captain"
-                    className='w-18'
+                    className='w-18 self-center'
                 />
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <div
                         className="text-gray-500 underline w-fit cursor-pointer"
-                        onClick={toggleEmailToNumber}
+                        onClick={toggleLoginMethod}
                     >
-                        Login with {toggle === 'email' ? 'number' : 'email'}?
+                        Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
                     </div>
-                    <label htmlFor="contact" className="font-semibold text-lg">
-                        Enter your {toggle === 'email' ? 'email' : 'phone number'}
-                    </label>
-                    {toggle === 'email' ? (
+                    {loginMethod === 'email' ? (
                         <div className="flex gap-3 justify-center">
                             <input
                                 type="email"
                                 name="email"
-                                placeholder="example@gmail.com"
+                                placeholder="Enter your email - example@gmail.com"
                                 className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 required
                             />
+                            {errors.email && <span className="text-red-500">{errors.email}</span>}
                         </div>
                     ) : (
                         <div className="flex gap-3 justify-center">
@@ -76,38 +126,36 @@ const UserLogin = () => {
                                 name="country"
                                 className="w-22 bg-gray-200 rounded-sm text-center"
                                 value={phoneCode}
-                                onChange={e => setPhoneCode(e.target.value)} // Use onChange instead of onClick
+                                onChange={e => setPhoneCode(e.target.value)}
                                 required
                             >
-                                <option value={phoneCodes['🇮🇳']}>🇮🇳 {phoneCodes['🇮🇳']}</option>
-                                <option value={phoneCodes['🇬🇧']}>🇬🇧 {phoneCodes['🇬🇧']}</option>
-                                <option value={phoneCodes['🇺🇸']}>🇺🇸 {phoneCodes['🇺🇸']}</option>
-                                <option value={phoneCodes['🇦🇺']}>🇦🇺 {phoneCodes['🇦🇺']}</option>
+                                {Object.keys(phoneCodes).map((flag) => (
+                                    <option key={flag} value={phoneCodes[flag]}>{flag} {phoneCodes[flag]}</option>
+                                ))}
                             </select>
                             <input
                                 type="tel"
-                                name="tel"
-                                placeholder="123-456-7890"
+                                name="phoneNumber"
+                                placeholder="Enter your number - 123-456-7890"
                                 className="bg-gray-200 w-72 rounded-sm p-2 placeholder:text-gray-800"
-                                value={phoneNumber}
-                                onChange={e => setPhoneNumber(e.target.value)}
+                                value={formData.phoneNumber}
+                                onChange={handleInputChange}
                                 required
                             />
+                            {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber}</span>}
                         </div>
                     )}
-                    <div
-                        className='flex flex-col gap-2'>
-                        <label htmlFor="password" className="font-semibold text-lg">Enter your password</label>
+                    <div className='flex flex-col gap-2'>
                         <input
                             type="password"
                             name="password"
-                            placeholder="Enter your password"
+                            placeholder="Enter your password - paglu123@"
                             className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={handleInputChange}
                             required
-
                         />
+                        {errors.password && <span className="text-red-500">{errors.password}</span>}
                     </div>
                     <button
                         type="submit"
@@ -122,7 +170,7 @@ const UserLogin = () => {
                 </form>
                 <Link
                     to='/captain-login'
-                    className='mt-48 bg-green-700 text-white text-xl w-full text-center  py-2 rounded-lg font-bold'
+                    className='bg-green-700 text-white text-xl w-full text-center  py-2 rounded-lg font-bold'
                 >Login as Captain</Link>
             </div>
         </div>

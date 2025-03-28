@@ -24,11 +24,38 @@ const UserSignup = () => {
         '🇦🇺': '+61',
     };
 
+    const validateField = (name, value) => {
+        if (!value?.trim()) return '';
+        
+        switch (name) {
+            case 'email':
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
+                    ? '' 
+                    : 'Please enter a valid email';
+            case 'password':
+                return value.length >= 8 
+                    ? '' 
+                    : 'Password must be at least 8 characters';
+            case 'tel':
+                return /^\d{10}$/.test(value) 
+                    ? '' 
+                    : 'Phone number must be 10 digits';
+            case 'firstname':
+            case 'lastname':
+                return value.length >= 3 
+                    ? '' 
+                    : `${name} must be at least 3 characters`;
+            default:
+                return '';
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
+        // Update form data
         if (['firstname', 'middlename', 'lastname'].includes(name)) {
-            setFormData((prev) => ({
+            setFormData(prev => ({
                 ...prev,
                 fullname: {
                     ...prev.fullname,
@@ -36,19 +63,18 @@ const UserSignup = () => {
                 }
             }));
         } else {
-            setFormData((prev) => ({
+            setFormData(prev => ({
                 ...prev,
                 [name]: value
             }));
         }
 
-        // Clear the error if the field is cleared
-        if (value === '') {
-            setErrors((prev) => ({
-                ...prev,
-                [name]: ''
-            }));
-        }
+        // Validate field
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
     };
 
     const generateUsername = (firstname) => {
@@ -97,45 +123,7 @@ const UserSignup = () => {
                 resetForm();
             }, 0);
         }
-    };
-
-    const validateForm = (e) => {
-        const { name, value } = e.target;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        const newErrors = { ...errors };
-
-        // Clear the error if the field is empty
-        if (!value.trim()) {
-            newErrors[name] = '';
-        } else {
-            switch (name) {
-                case 'email':
-                    newErrors.email = !emailRegex.test(value) ? 'Please enter a valid email' : '';
-                    break;
-                case 'firstname':
-                    newErrors.firstname = value.length < 3 ? 'First name must be at least 3 characters long' : '';
-                    break;
-                case 'middlename':
-                    newErrors.middlename = value.length < 3 ? 'Middle name must be at least 3 characters long' : '';
-                    break;
-                case 'lastname':
-                    newErrors.lastname = value.length < 3 ? 'Last name must be at least 3 characters long' : '';
-                    break;
-                case 'tel':
-                    newErrors.tel = !/^\d{10}$/.test(value) ? 'Phone number must be 10 digits long' : '';
-                    break;
-                case 'password':
-                    newErrors.password = value.length < 8 ? 'Password must be at least 8 characters long' : '';
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        setErrors(newErrors);
-    };
-
+    }
     return (
         <div className='flex h-screen justify-center items-center'>
             <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-10 justify-center items-center">
@@ -152,7 +140,6 @@ const UserSignup = () => {
                             value={formData.email}
                             required
                             onChange={handleInputChange}
-                            onBlur={validateForm}
                         />
                         {errors.email && <div className='text-red-600 text-sm'>{errors.email}</div>}
                     </div>
@@ -170,45 +157,44 @@ const UserSignup = () => {
                                     value={formData.fullname[name]}
                                     required={name !== 'middlename'}  // Middle name is optional
                                     onChange={handleInputChange}
-                                    onBlur={validateForm}
                                 />
                             ))}
                         </div>
                         <>
                             {errors.firstname && <div className='text-red-600 text-sm'>{errors.firstname}</div>}
-                            {errors.middlename && <div className='text-red-600 text-sm'>{errors.middlename}</div>}
                             {errors.lastname && <div className='text-red-600 text-sm'>{errors.lastname}</div>}
                         </>
                     </div>
 
                     {/* Phone Section */}
-                    <div className="flex gap-2">
-                        <select
-                            name="country"
-                            className="bg-gray-200 p-2 rounded-sm text-center "
-                            value={phoneCode}
-                            onChange={(e) => setPhoneCode(e.target.value)}
-                            required
-                        >
-                            {Object.keys(phoneCodes).map((flag) => (
-                                <option key={flag} value={phoneCodes[flag]}>
-                                    {flag} {phoneCodes[flag]}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            type="tel"
-                            name="tel"
-                            placeholder="Enter your tel. number - 123-456-7890"
-                            className="bg-gray-200 rounded-sm p-2 placeholder:text-gray-800 w-9/12"
-                            value={formData.tel}
-                            onChange={handleInputChange}
-                            onBlur={validateForm}
-                            required
-                        />
+
+                    <div className="flex flex-col gap-2 ">
+                        <div className="flex gap-2">
+                            <select
+                                name="country"
+                                className="bg-gray-200 p-2 rounded-sm text-center "
+                                value={phoneCode}
+                                onChange={(e) => setPhoneCode(e.target.value)}
+                                required
+                            >
+                                {Object.keys(phoneCodes).map((flag) => (
+                                    <option key={flag} value={phoneCodes[flag]}>
+                                        {flag} {phoneCodes[flag]}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="tel"
+                                name="tel"
+                                placeholder="Enter your tel. number - 123-456-7890"
+                                className="bg-gray-200 rounded-sm p-2 placeholder:text-gray-800 w-9/12"
+                                value={formData.tel}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
                         {errors.tel && <div className='text-red-600 text-sm'>{errors.tel}</div>}
                     </div>
-
                     {/* Password Section */}
                     <input
                         type="password"
@@ -217,7 +203,6 @@ const UserSignup = () => {
                         className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
                         value={formData.password}
                         onChange={handleInputChange}
-                        onBlur={validateForm}
                         required
                     />
                     {errors.password && <div className='text-red-600 text-sm'>{errors.password}</div>}
