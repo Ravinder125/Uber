@@ -25,11 +25,11 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
         return res.status(400).json(ApiResponse.error(400, errors.array().map(error => error.msg), "Validation error"));
     }
 
-    const { username, email, fullname, password } = req.body;
+    const { username, email, tel, fullname, password } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) return res.status(400).json(ApiResponse.error(400, 'User already exist', 'User already exists'));
 
-    const user = await createUser(email, username, fullname, password);
+    const user = await createUser(email, username, tel, fullname, password);
     if (!user) return res.
         status(500)
         .json(ApiResponse.error(500, 'Error occured while creating creating user', "Internal server error"));

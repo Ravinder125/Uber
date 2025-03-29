@@ -1,46 +1,51 @@
 const captainModel = require('../models/captain.model');
 
-module.exports.createCaptain = async (
-    fullname, email, password, phone, status, vehicle, location
-) => {
+module.exports.createCaptain = async (fullname, email, password, tel, status, vehicle, location) => {
     try {
-        if (
-            !fullname?.firstname ||
+        // Validate required fields
+        if (!fullname?.firstname ||
             !fullname?.lastname ||
-            !password ||
             !email ||
-            !phone ||
+            !password ||
+            !tel ||
             !vehicle?.color ||
-            !vehicle.capacity ||
-            !vehicle.plate ||
-            !vehicle.type ||
-            !status
-        ) throw new Error('All fields are required');
+            !vehicle?.plate) {
+            throw new Error('All required fields must be provided');
+        }
 
+        // Create captain with validated data
         const newCaptain = await captainModel.create({
             fullName: {
                 firstName: fullname.firstname,
-                middleName: fullname.middlename || "",
+                middleName: fullname.middlename || '',
                 lastName: fullname.lastname,
             },
             email,
             password,
-            phone,
-            status,
+            tel,
+            status: status || 'inactive',
             vehicle: {
                 color: vehicle.color,
-                capacity: vehicle.capacity,
                 plate: vehicle.plate,
-                vehicleType: vehicle.type
+                capacity: vehicle.capacity || 4,
+                vehicleType: vehicle.type || 'car'
             },
             location: {
                 lat: location?.latitude || null,
                 lng: location?.longitude || null
             }
-        });
+        })
 
+        // Remove password from response
+        newCaptain.password = undefined;
         return newCaptain;
+
     } catch (error) {
+        if (error.code === 11000) {
+            // Handle duplicate key errors
+            const field = Object.keys(error.keyPattern)[0];
+            throw new Error(`${field} already exists`);
+        }
         throw error;
     }
 };

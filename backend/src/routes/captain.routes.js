@@ -14,15 +14,15 @@ router.post('/register', [
         .isEmail().withMessage('Invalid email'),
     body('password')
         .isLength({ min: 8 }).withMessage('Password must be at least 8 character long'),
-    body('phone')
-        .isLength({ min: 10 }, { max: 10 }).withMessage('Phone must be only 10 digits long'),
+    body('tel')
+        .isLength({ min: 10 }, { max: 13 }).withMessage('Phone must be only 10 digits long'),
     body('status')
         .isIn(["active", "inactive"]).withMessage('Status should be either active or inactive'),
     body('vehicle.color')
         .isLength({ min: 3 }).withMessage('Color mus be at least 3 characters long'),
     body('vehicle.plate')
         .isLength({ min: 3 }).withMessage('Plate number must be 3 characters long'),
-    body('capacity')
+    body('vehicle.capacity')
         .isNumeric().withMessage('Capacity must be a number')
         .isLength({ min: 1 }).withMessage('capacity must be at least 1 sit'),
     body('vehicle.type')

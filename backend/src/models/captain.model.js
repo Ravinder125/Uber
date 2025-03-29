@@ -1,7 +1,10 @@
+// Suppress CommonJS module warning
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-bcrypt = require('bcryptjs');
-jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const captainSchema = new Schema({
     fullName: {
@@ -22,6 +25,14 @@ const captainSchema = new Schema({
             minlength: [3, 'First name must be atleast 3 characters long']
         },
     },
+    tel: {
+        type: String,
+        required: true,
+        minlength: [10, 'Phone number must be at least 10 characters long'],
+        unique: true,
+        index: true,
+        trim: true
+    },
     email: {
         type: String,
         required: [true, 'Email is required'],
@@ -41,22 +52,11 @@ const captainSchema = new Schema({
     sockectId: {
         type: String
     },
-    phone: {
-        type: String,
-        required: [true, 'Phone number is required'],
-        match: [/^\d{10}$/, 'Please enter a valid phone number'],
-        unique: true,
-        index: true,
-        trim: true,
-        minlength: [10, 'Phone number must be 10 digit long'],
-        maxlength: [10, 'Phone number must not exceed 10 digit']
-    },
     status: {
         type: String,
         enum: ["active", "inactive"],
         default: 'inactive',
         index: true,
-        required: [true, 'Status is required'],
     },
     vehicle: {
         color: {

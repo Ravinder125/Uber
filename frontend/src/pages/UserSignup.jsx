@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -14,10 +15,10 @@ const UserSignup = () => {
         password: ''
     });
 
-    const [phoneCode, setPhoneCode] = useState('+91');
+    const [telephoneCode, settelephoneCode] = useState('+91');
     const [errors, setErrors] = useState({});
 
-    const phoneCodes = {
+    const telephoneCodes = {
         '🇮🇳': '+91',
         '🇬🇧': '+44',
         '🇺🇸': '+1',
@@ -26,24 +27,24 @@ const UserSignup = () => {
 
     const validateField = (name, value) => {
         if (!value?.trim()) return '';
-        
+
         switch (name) {
             case 'email':
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
-                    ? '' 
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                    ? ''
                     : 'Please enter a valid email';
             case 'password':
-                return value.length >= 8 
-                    ? '' 
+                return value.length >= 8
+                    ? ''
                     : 'Password must be at least 8 characters';
             case 'tel':
-                return /^\d{10}$/.test(value) 
-                    ? '' 
+                return /^\d{10}$/.test(value)
+                    ? ''
                     : 'Phone number must be 10 digits';
             case 'firstname':
             case 'lastname':
-                return value.length >= 3 
-                    ? '' 
+                return value.length >= 3
+                    ? ''
                     : `${name} must be at least 3 characters`;
             default:
                 return '';
@@ -101,7 +102,7 @@ const UserSignup = () => {
         setErrors({});
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         console.log('Form submitted:', formData);
@@ -112,16 +113,20 @@ const UserSignup = () => {
             const updatedFormData = {
                 ...formData,
                 username,
-                tel: `${phoneCode}${formData.tel}`
+                tel: `${telephoneCode}${formData.tel}`
             };
 
             setFormData(updatedFormData);
 
             console.log('Updated Form Data:', updatedFormData);
 
-            setTimeout(() => {
-                resetForm();
-            }, 0);
+            try {
+                const response = await axios.post('http://localhost:3000/api/v1/users/register', updatedFormData)
+                console.log(response)
+                resetForm()
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     return (
@@ -173,13 +178,13 @@ const UserSignup = () => {
                             <select
                                 name="country"
                                 className="bg-gray-200 p-2 rounded-sm text-center "
-                                value={phoneCode}
-                                onChange={(e) => setPhoneCode(e.target.value)}
+                                value={telephoneCode}
+                                onChange={(e) => settelephoneCode(e.target.value)}
                                 required
                             >
-                                {Object.keys(phoneCodes).map((flag) => (
-                                    <option key={flag} value={phoneCodes[flag]}>
-                                        {flag} {phoneCodes[flag]}
+                                {Object.keys(telephoneCodes).map((flag) => (
+                                    <option key={flag} value={telephoneCodes[flag]}>
+                                        {flag} {telephoneCodes[flag]}
                                     </option>
                                 ))}
                             </select>

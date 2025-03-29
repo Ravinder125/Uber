@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const CaptainSignup = () => {
     const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const CaptainSignup = () => {
             middlename: '',
             lastname: ''
         },
-        phoneNumber: '',
+        tel: '',
         password: '',
         vehicle: {
             color: '',
@@ -19,12 +20,12 @@ const CaptainSignup = () => {
         },
         status: 'active',
         location: {
-            lat: '',
-            lng: ''
+            latitude: null,
+            longitude: null
         }
     });
 
-    const [phoneCode, setPhoneCode] = useState('+91');
+    const [telephoneCode, settelephoneCode] = useState('+91');
     const [errors, setErrors] = useState({
         email: '',
         fullname: {
@@ -32,7 +33,7 @@ const CaptainSignup = () => {
             middlename: '',
             lastname: ''
         },
-        phoneNumber: '',
+        tel: '',
         password: '',
         vehicle: {
             color: '',
@@ -40,7 +41,7 @@ const CaptainSignup = () => {
         },
     });
 
-    const phoneCodes = {
+    const telephoneCodes = {
         '🇮🇳': '+91',
         '🇬🇧': '+44',
         '🇺🇸': '+1',
@@ -49,29 +50,29 @@ const CaptainSignup = () => {
 
     const validateField = (name, value) => {
         if (!value?.trim()) return '';
-        
+
         switch (name) {
             case 'email':
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
-                    ? '' 
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                    ? ''
                     : 'Please enter a valid email';
             case 'password':
-                return value.length >= 8 
-                    ? '' 
+                return value.length >= 8
+                    ? ''
                     : 'Password must be at least 8 characters';
-            case 'phoneNumber':
-                return /^\d{10}$/.test(value) 
-                    ? '' 
+            case 'tel':
+                return /^\d{10}$/.test(value)
+                    ? ''
                     : 'Phone number must be 10 digits';
             case 'firstname':
             case 'lastname':
-                return value.length >= 3 
-                    ? '' 
+                return value.length >= 3
+                    ? ''
                     : `${name} must be at least 3 characters`;
             case 'vehicle.color':
             case 'vehicle.plate':
-                return value.length >= 3 
-                    ? '' 
+                return value.length >= 3
+                    ? ''
                     : `${name.split('.')[1]} must be at least 3 characters`;
             default:
                 return '';
@@ -80,17 +81,29 @@ const CaptainSignup = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Update form data
         if (name.includes('vehicle.')) {
-            const [, field] = name.split('.');
-            setFormData(prev => ({
-                ...prev,
-                vehicle: {
-                    ...prev.vehicle,
-                    [field]: value
-                }
-            }));
+            if (name.includes('vehicle.capacity')) {
+                const [, field] = name.split('.');
+                setFormData(prev => ({
+                    ...prev,
+                    vehicle: {
+                        ...prev.vehicle,
+                        [field]: parseInt(value)
+                    }
+                }));
+
+            } else {
+                const [, field] = name.split('.');
+                setFormData(prev => ({
+                    ...prev,
+                    vehicle: {
+                        ...prev.vehicle,
+                        [field]: value
+                    }
+                }));
+            }
         } else if (['firstname', 'middlename', 'lastname'].includes(name)) {
             setFormData(prev => ({
                 ...prev,
@@ -117,33 +130,59 @@ const CaptainSignup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log(e.target.value)
+        // Validate all required fields
+        const requiredFields = {
+            'email': formData.email,
+            'firstname': formData.fullname.firstname,
+            'lastname': formData.fullname.lastname,
+            'tel': formData.tel,
+            'password': formData.password,
+            'vehicle.color': formData.vehicle.color,
+            'vehicle.plate': formData.vehicle.plate
+        };
+
+        const validationErrors = {};
+        Object.entries(requiredFields).forEach(([field, value]) => {
+            const error = validateField(field, value);
+            if (error) validationErrors[field] = error;
+        });
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(prev => ({ ...prev, ...validationErrors }));
+            return;
+        }
 
         const submitData = {
             ...formData,
-            phoneNumber: phoneCode + formData.phoneNumber
+            tel: telephoneCode + formData.tel
         };
-        console.log('Errors:', errors)
 
         try {
-            const response = await fetch('/api/v1/captains/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(submitData)
-            });
+            const response = await axios.post(
+                'http://localhost:3000/api/v1/captains/register',
+                submitData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    withCredentials: true
+                }
+            );
 
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || 'Registration failed');
+            if (response.data.success) {
+                console.log('Registration successful:', response.data);
+                // Add navigation logic here
             }
 
-            // Handle successful registration
-            console.log('Registration successful', data);
-
         } catch (error) {
-            setErrors(prev => ({ ...prev, submit: error.message }));
+            const errorMessage = error.response?.data?.message ||
+                error.response?.data?.error ||
+                'Registration failed';
+
+            setErrors(prev => ({
+                ...prev,
+                submit: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage
+            }));
         }
     };
 
@@ -190,11 +229,11 @@ const CaptainSignup = () => {
                         {/* Phone input */}
                         <div className='flex gap-2'>
                             <select
-                                value={phoneCode}
-                                onChange={(e) => setPhoneCode(e.target.value)}
+                                value={telephoneCode}
+                                onChange={(e) => settelephoneCode(e.target.value)}
                                 className='bg-gray-200 p-2 rounded-sm w-1/4'
                             >
-                                {Object.entries(phoneCodes).map(([flag, code]) => (
+                                {Object.entries(telephoneCodes).map(([flag, code]) => (
                                     <option key={code} value={code}>
                                         {flag} {code}
                                     </option>
@@ -202,15 +241,15 @@ const CaptainSignup = () => {
                             </select>
                             <input
                                 type="tel"
-                                name="phoneNumber"
+                                name="tel"
                                 placeholder='Phone number'
-                                value={formData.phoneNumber}
+                                value={formData.tel}
                                 onChange={handleInputChange}
                                 className='bg-gray-200 p-2 rounded-sm w-9/12'
                                 required
                             />
                         </div>
-                        {errors.phoneNumber && <span className="text-red-500 text-sm">{errors.phoneNumber}</span>}
+                        {errors.tel && <span className="text-red-500 text-sm">{errors.tel}</span>}
 
                         {/* Password input */}
                         <input

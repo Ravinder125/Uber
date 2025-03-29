@@ -26,14 +26,14 @@ module.exports.registerCaptain = asyncHandler(async (req, res) => {
         return res.status(400).json(ApiResponse.error(400, errors.array().map(err => err.msg), 'Validation error'));
     }
 
-    const { fullname, email, password, phone, status, vehicle, location } = req.body;
+    const { fullname, email, password, tel, status, vehicle, location } = req.body;
 
     const existingCaptain = await captainModel.findOne({ email });
     if (existingCaptain) {
         return res.status(400).json(ApiResponse.error(400, 'Captain already exists', 'Captain already exists'));
     }
 
-    const newCaptain = await createCaptain(fullname, email, password, phone, status, vehicle, location);
+    const newCaptain = await createCaptain(fullname, email, password, tel, status, vehicle, location);
 
     const { options, token, error } = await generateAuthToken(newCaptain._id);
     if (error) return res.status(500).json(ApiResponse.error(500, 'Token generation failed', 'Internal server error'))

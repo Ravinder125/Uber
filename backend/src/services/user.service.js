@@ -1,9 +1,9 @@
 const { model } = require('mongoose');
 const userModel = require('../models/user.model');
 
-module.exports.createUser = async (email, username, fullname, password) => {
+module.exports.createUser = async (email, tel, username, fullname, password) => {
     try {
-        if (!username || !fullname || !password || !email) {
+        if (!username || !fullname || tel || !password || !email) {
             throw new res.status(400).json({ message: 'All fields are required' });
         }
 
@@ -14,6 +14,7 @@ module.exports.createUser = async (email, username, fullname, password) => {
                 middleName: fullname?.middlename || '',
                 lastName: fullname.lastname
             },
+            tel,
             password,
             email
         });
