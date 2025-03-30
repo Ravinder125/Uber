@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CaptainSignup = () => {
@@ -10,6 +10,7 @@ const CaptainSignup = () => {
             middlename: '',
             lastname: ''
         },
+        telCode: '',
         tel: '',
         password: '',
         vehicle: {
@@ -25,7 +26,6 @@ const CaptainSignup = () => {
         }
     });
 
-    const [telephoneCode, settelephoneCode] = useState('+91');
     const [errors, setErrors] = useState({
         email: '',
         fullname: {
@@ -84,105 +84,77 @@ const CaptainSignup = () => {
 
         // Update form data
         if (name.includes('vehicle.')) {
-            if (name.includes('vehicle.capacity')) {
-                const [, field] = name.split('.');
-                setFormData(prev => ({
-                    ...prev,
-                    vehicle: {
-                        ...prev.vehicle,
-                        [field]: parseInt(value)
-                    }
-                }));
+            name.includes('vehicle.capacity')
+            const [, field] = name.split('.');
+            setFormData(prev => ({ ...prev, vehicle: { ...prev.vehicle, [field]: isNaN(parseInt(value)) ? value : parseInt(value) } }));
 
-            } else {
-                const [, field] = name.split('.');
-                setFormData(prev => ({
-                    ...prev,
-                    vehicle: {
-                        ...prev.vehicle,
-                        [field]: value
-                    }
-                }));
-            }
         } else if (['firstname', 'middlename', 'lastname'].includes(name)) {
-            setFormData(prev => ({
-                ...prev,
-                fullname: {
-                    ...prev.fullname,
-                    [name]: value
-                }
-            }));
+            setFormData(prev => ({ ...prev, fullname: { ...prev.fullname, [name]: value } }));
         } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
 
         // Validate field
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setErrors(prev => ({ ...prev, [name]: error }));
     };
+
+    const resetForm = () => {
+        setFormData({
+            email: '',
+            fullname: {
+                firstname: '',
+                middlename: '',
+                lastname: ''
+            },
+            tel: '',
+            telCode: '',
+            password: '',
+            vehicle: {
+                color: '',
+                plate: '',
+                type: 'car',
+                capacity: 4
+            },
+            status: 'active',
+            location: {
+                latitude: null,
+                longitude: null
+            }
+        })
+        setErrors({
+            email: '',
+            fullname: {
+                firstname: '',
+                middlename: '',
+                lastname: ''
+            },
+            tel: '',
+            password: '',
+            vehicle: {
+                color: '',
+                plate: '',
+            },
+        })
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate all required fields
-        const requiredFields = {
-            'email': formData.email,
-            'firstname': formData.fullname.firstname,
-            'lastname': formData.fullname.lastname,
-            'tel': formData.tel,
-            'password': formData.password,
-            'vehicle.color': formData.vehicle.color,
-            'vehicle.plate': formData.vehicle.plate
-        };
-
-        const validationErrors = {};
-        Object.entries(requiredFields).forEach(([field, value]) => {
-            const error = validateField(field, value);
-            if (error) validationErrors[field] = error;
-        });
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(prev => ({ ...prev, ...validationErrors }));
-            return;
-        }
-
-        const submitData = {
-            ...formData,
-            tel: telephoneCode + formData.tel
-        };
+        const submitData = { ...formData, telCode: !formData.telCode ? '+91' : formData.telCode, };
 
         try {
-            const response = await axios.post(
-                'http://localhost:3000/api/v1/captains/register',
-                submitData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                }
-            );
-
+            const response = await axios.post('http://localhost:3000/api/v1/captains/register', submitData);
             if (response.data.success) {
                 console.log('Registration successful:', response.data);
-                // Add navigation logic here
+
             }
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message ||
-                error.response?.data?.error ||
-                'Registration failed';
-
-            setErrors(prev => ({
-                ...prev,
-                submit: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage
-            }));
+            console.log('Error:', error);
+            setErrors(prev => ({ ...prev, submit: error.response.data.message }));
+        } finally {
+            resetForm();
         }
     };
 
@@ -229,8 +201,9 @@ const CaptainSignup = () => {
                         {/* Phone input */}
                         <div className='flex gap-2'>
                             <select
-                                value={telephoneCode}
-                                onChange={(e) => settelephoneCode(e.target.value)}
+                                name='telCode'
+                                value={formData.telCode}
+                                onChange={handleInputChange}
                                 className='bg-gray-200 p-2 rounded-sm w-1/4'
                             >
                                 {Object.entries(telephoneCodes).map(([flag, code]) => (

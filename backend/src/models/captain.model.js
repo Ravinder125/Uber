@@ -25,6 +25,14 @@ const captainSchema = new Schema({
             minlength: [3, 'First name must be atleast 3 characters long']
         },
     },
+    telCode: {
+        type: String,
+        required: true,
+        minlength: [1, 'Phone code must be at least 1 character long'],
+        maxlength: [3, 'Phone code must not exceed 3 characters'],
+        index: true,
+
+    },
     tel: {
         type: String,
         required: true,
@@ -40,7 +48,6 @@ const captainSchema = new Schema({
         unique: true,
         index: true,
         trim: true,
-        lowercase: [true, 'Email must be in lowercase']
     },
     password: {
         type: String,
@@ -49,7 +56,7 @@ const captainSchema = new Schema({
         minlength: [8, 'Password must be atleast 8 characters long'],
         select: false
     },
-    sockectId: {
+    socketId: {
         type: String
     },
     status: {

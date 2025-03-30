@@ -15,7 +15,7 @@ router.post('/register', [
     body('password')
         .isLength({ min: 8 }).withMessage('Password must be at least 8 character long'),
     body('tel')
-        .isLength({ min: 10 }, { max: 13 }).withMessage('Phone must be only 10 digits long'),
+        .isLength({ min: 10, max: 13 }).withMessage('Phone must be only 10 digits long'),
     body('status')
         .isIn(["active", "inactive"]).withMessage('Status should be either active or inactive'),
     body('vehicle.color')
@@ -34,7 +34,7 @@ router.post('/login', [
     body('email')
         .isEmail().withMessage('Invalid email'),
     body('password')
-        .isLength({ min: 8 }, { max: 50 }).withMessage('Password must be at least 8 characters long')
+        .isLength({ min: 8, max: 50 }).withMessage('Password must be at least 8 characters long')
 ],
     captainController.loginCaptain
 )
