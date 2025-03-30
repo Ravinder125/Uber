@@ -1,8 +1,12 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { userContext } from '../context/UserContext';
+
 
 const UserSignup = () => {
+    const userData = useContext(userContext);
+    // console.log(userData)
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -11,12 +15,13 @@ const UserSignup = () => {
             middlename: '',
             lastname: ''
         },
+        telCode: '',
         tel: '',
         password: ''
     });
 
-    const [telephoneCode, settelephoneCode] = useState('+91');
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const telephoneCodes = {
         '🇮🇳': '+91',
@@ -56,26 +61,14 @@ const UserSignup = () => {
 
         // Update form data
         if (['firstname', 'middlename', 'lastname'].includes(name)) {
-            setFormData(prev => ({
-                ...prev,
-                fullname: {
-                    ...prev.fullname,
-                    [name]: value
-                }
-            }));
+            setFormData(prev => ({ ...prev, fullname: { ...prev.fullname, [name]: value } }));
         } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
 
         // Validate field
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setErrors(prev => ({ ...prev, [name]: error }));
     };
 
     const generateUsername = (firstname) => {
@@ -94,6 +87,7 @@ const UserSignup = () => {
                 middlename: '',
                 lastname: ''
             },
+            telCode: '',
             tel: '',
             password: ''
         });
@@ -110,11 +104,7 @@ const UserSignup = () => {
         const username = generateUsername(formData.fullname.firstname);
 
         if (username) {
-            const updatedFormData = {
-                ...formData,
-                username,
-                tel: `${telephoneCode}${formData.tel}`
-            };
+            const updatedFormData = { ...formData, username, telCode: formData.telCode ? formData.telCode : '+91' };
 
             setFormData(updatedFormData);
 
@@ -123,9 +113,13 @@ const UserSignup = () => {
             try {
                 const response = await axios.post('http://localhost:3000/api/v1/users/register', updatedFormData)
                 console.log(response)
-                resetForm()
+                navigate('/login')
             } catch (error) {
                 console.log(error)
+                setErrors(prev => ({ ...prev, submit: error.response.data.message }))
+
+            } finally {
+                resetForm();
             }
         }
     }
@@ -176,10 +170,10 @@ const UserSignup = () => {
                     <div className="flex flex-col gap-2 ">
                         <div className="flex gap-2">
                             <select
-                                name="country"
+                                name="telCode"
                                 className="bg-gray-200 p-2 rounded-sm text-center "
-                                value={telephoneCode}
-                                onChange={(e) => settelephoneCode(e.target.value)}
+                                value={formData.telCode}
+                                onChange={handleInputChange}
                                 required
                             >
                                 {Object.keys(telephoneCodes).map((flag) => (

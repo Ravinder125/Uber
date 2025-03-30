@@ -26,7 +26,17 @@ const userSchema = new Schema({
         required: true,
         trim: true,
         index: true,
-        unique: true
+        unique: true,
+        minlength: [10, 'Phone number must be at least 10 characters long'],
+        maxlength: [15, 'Phone number must not exceed 15 characters']
+    },
+    telCode: {
+        type: String,
+        required: true,
+        trim: true,
+        index: true,
+        minlength: [1, 'Phone code must be at least 1 character long'],
+        maxlength: [3, 'Phone code must not exceed 3 charactees']
     },
     email: {
         type: String,

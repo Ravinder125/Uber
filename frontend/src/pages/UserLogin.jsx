@@ -1,17 +1,19 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
         email: '',
-        phoneNumber: '',
+        telCode: '',
+        tel: '',
         password: ''
     });
+    const [telCode, setTelCode] = useState('+91');
     const [loginMethod, setLoginMethod] = useState('email');
-    const [phoneCode, setPhoneCode] = useState('+91');
     const [errors, setErrors] = useState({});
 
-    const phoneCodes = {
+    const telephoneCodes = {
         '🇮🇳': '+91',
         '🇬🇧': '+44',
         '🇺🇸': '+1',
@@ -20,19 +22,19 @@ const UserLogin = () => {
 
     const validateField = (name, value) => {
         if (!value?.trim()) return '';
-        
+
         switch (name) {
             case 'email':
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
-                    ? '' 
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                    ? ''
                     : 'Please enter a valid email';
             case 'password':
-                return value.length >= 8 
-                    ? '' 
+                return value.length >= 8
+                    ? ''
                     : 'Password must be at least 8 characters';
-            case 'phoneNumber':
-                return /^\d{10}$/.test(value) 
-                    ? '' 
+            case 'tel':
+                return /^\d{10}$/.test(value)
+                    ? ''
                     : 'Phone number must be 10 digits';
             default:
                 return '';
@@ -48,48 +50,44 @@ const UserLogin = () => {
 
         // Validate on change
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setErrors(prev => ({ ...prev, [name]: error }));
     };
 
     const toggleLoginMethod = () => {
-        setLoginMethod(prev => prev === 'email' ? 'phoneNumber' : 'email');
-        setFormData(prev => ({
-            ...prev,
-            email: '',
-            phoneNumber: ''
-        }));
+        setLoginMethod(prev => prev === 'email' ? 'tel' : 'email');
+        setFormData(prev => ({ ...prev, email: '', telCode: '', tel: '' }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const validationErrors = {};
-        Object.keys(formData).forEach(field => {
-            const error = validateField(field, formData[field]);
-            if (error) validationErrors[field] = error;
+    const resetForm = () => {
+        setFormData({
+            email: '',
+            telCode: '',
+            tel: '',
+            password: ''
         });
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            return;
-        }
+        setErrors({});
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
         const finalData = loginMethod === 'email'
             ? { email: formData.email, password: formData.password }
-            : { phoneNumber: phoneCode + formData.phoneNumber, password: formData.password };
+            : { telCode: formData.telCode, tel: formData.tel, password: formData.password };
 
         console.log(finalData);
         console.log('Form submitted');
 
-        setFormData({
-            email: '',
-            phoneNumber: '',
-            password: ''
-        });
-        setPhoneCode('+91');
-        setErrors({});
+        try {
+            const response = await axios.post('http://localhost:3000/api/v1/users/login', finalData);
+            console.log(response.data);
+        } catch (error) {
+            console.log('Error:', error);
+
+        } finally {
+            resetForm();
+        }
+
+
     };
 
     return (
@@ -125,24 +123,24 @@ const UserLogin = () => {
                             <select
                                 name="country"
                                 className="w-22 bg-gray-200 rounded-sm text-center"
-                                value={phoneCode}
+                                value={telCode}
                                 onChange={e => setPhoneCode(e.target.value)}
                                 required
                             >
-                                {Object.keys(phoneCodes).map((flag) => (
+                                {Object.keys(telephoneCodes).map((flag) => (
                                     <option key={flag} value={phoneCodes[flag]}>{flag} {phoneCodes[flag]}</option>
                                 ))}
                             </select>
                             <input
                                 type="tel"
-                                name="phoneNumber"
+                                name="tel"
                                 placeholder="Enter your number - 123-456-7890"
                                 className="bg-gray-200 w-72 rounded-sm p-2 placeholder:text-gray-800"
-                                value={formData.phoneNumber}
+                                value={formData.tel}
                                 onChange={handleInputChange}
                                 required
                             />
-                            {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber}</span>}
+                            {errors.tel && <span className="text-red-500">{errors.tel}</span>}
                         </div>
                     )}
                     <div className='flex flex-col gap-2'>
