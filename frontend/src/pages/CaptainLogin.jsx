@@ -66,22 +66,28 @@ const CaptainLogin = () => {
     };
 
     return (
-        <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 w-96 justify-center sm:bg-gray-100 flex gap-10 flex-col">
+        <div className="flex h-screen justify-center items-center">
+            <div className="p-6 w-96 sm:bg-gray-100 flex flex-col gap-10">
+                {/* Logo */}
                 <img
                     src="./uber-logo.png"
                     alt="uber-logo-captain"
-                    className='w-18 self-center'
+                    className="w-18 self-center"
                 />
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+
+                {/* Login Form */}
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    {/* Toggle Login Method */}
                     <div
-                        className="text-gray-500 underline w-fit cursor-pointer"
+                        className="text-gray-500 underline cursor-pointer self-start"
                         onClick={loginMethodEmailToNumber}
                     >
-                        Login with {loginMethod === 'email' ? 'number' : 'email'}?
+                        Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
                     </div>
+
+                    {/* Email or Phone Input */}
                     {loginMethod === 'email' ? (
-                        <div className="flex gap-3 flex-col justify-center">
+                        <div className="flex flex-col gap-2">
                             <input
                                 type="email"
                                 name="email"
@@ -91,11 +97,13 @@ const CaptainLogin = () => {
                                 onChange={handleInputChange}
                                 required
                             />
-                            {errors.email && <div className='text-red-500 text-base'>{errors.email}</div>}
+                            {errors.email && (
+                                <div className="text-red-500 text-sm">{errors.email}</div>
+                            )}
                         </div>
                     ) : (
-                        <div className='flex flex-col gap-2'>
-                            <div className="flex gap-3 justify-center">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-3">
                                 <select
                                     name="telCode"
                                     className="w-22 bg-gray-200 rounded-sm text-center"
@@ -104,7 +112,9 @@ const CaptainLogin = () => {
                                     required
                                 >
                                     {Object.entries(phoneCodes).map(([flag, code]) => (
-                                        <option key={code} value={code}>{flag} {code}</option>
+                                        <option key={code} value={code}>
+                                            {flag} {code}
+                                        </option>
                                     ))}
                                 </select>
                                 <input
@@ -117,11 +127,14 @@ const CaptainLogin = () => {
                                     required
                                 />
                             </div>
-                            {errors.tel && <div className='text-red-500 text-base'>{errors.tel}</div>}
+                            {errors.tel && (
+                                <div className="text-red-500 text-sm">{errors.tel}</div>
+                            )}
                         </div>
-
                     )}
-                    <div className='flex flex-col gap-2'>
+
+                    {/* Password Input */}
+                    <div className="flex flex-col gap-2">
                         <input
                             type="password"
                             name="password"
@@ -131,22 +144,35 @@ const CaptainLogin = () => {
                             onChange={handleInputChange}
                             required
                         />
-                        {errors.password && <div className='text-red-500 text-base'>{errors.password}</div>}
+                        {errors.password && (
+                            <div className="text-red-500 text-sm">{errors.password}</div>
+                        )}
                     </div>
-                    {errors.submit && <div className='text-red-500 text-base'>{errors.submit}</div>}
+
+                    {/* Submit Error */}
+                    {errors.submit && (
+                        <div className="text-red-500 text-sm">{errors.submit}</div>
+                    )}
+
+                    {/* Submit Button */}
                     <button
                         type="submit"
-                        className="bg-black text-white w-full py-2 rounded-sm self-center font-bold"
+                        className="bg-black text-white w-full py-2 rounded-sm font-bold"
                     >
                         Login
                     </button>
-                    <Link to='/captain-signup' className='text-center text-sm'>
-                        New here? <span className='text-blue-500'>Create new Account</span>
+
+                    {/* Signup Link */}
+                    <Link to="/captain-signup" className="text-center text-sm">
+                        New here?{" "}
+                        <span className="text-blue-500">Create new Account</span>
                     </Link>
                 </form>
+
+                {/* User Login Link */}
                 <Link
-                    to='/login'
-                    className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'
+                    to="/login"
+                    className="bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold"
                 >
                     Login as User
                 </Link>

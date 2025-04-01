@@ -220,7 +220,7 @@ const UserSignup = () => {
                 </form>
 
                 <Link
-                    to='/captain-signup'
+                    to='/captain-register'
                     className='bg-green-700 text-white text-xl text-center py-2 rounded-lg font-bold w-full'>
                     Signup as Captain
                 </Link>

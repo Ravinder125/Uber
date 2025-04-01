@@ -74,11 +74,10 @@ const UserLogin = () => {
             : { telCode: formData.telCode || '+91', tel: formData.tel, password: formData.password };
 
         console.log(finalData);
-        console.log('Form submitted');
 
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, finalData);
-            console.log(response.data);
+            console.log('User successfully registerd:', response.data);
         } catch (error) {
             const errorMessage = error.response?.data?.error > 1 ? error.response.data.error : error.response.data.message;
             console.log('Error:', errorMessage || error);
@@ -109,6 +108,7 @@ const UserLogin = () => {
                     </div>
                     {loginMethod === 'email' ? (
                         <div className="flex flex-col  gap-3 justify-center">
+                            {/* Email Section */}
                             <input
                                 type="email"
                                 name="email"
@@ -122,6 +122,7 @@ const UserLogin = () => {
                         </div>
                     ) : (
                         <div className="flex gap-3 justify-center">
+                            {/* Phone Section */}
                             <select
                                 name="country"
                                 className="w-22 bg-gray-200 rounded-sm text-center"
@@ -146,6 +147,7 @@ const UserLogin = () => {
                         </div>
                     )}
                     <div className='flex flex-col gap-2'>
+                        {/* Password Sectin */}
                         <input
                             type="password"
                             name="password"
@@ -160,17 +162,20 @@ const UserLogin = () => {
                     <div>
                         {errors.submit && <span className="text-red-500 text-base">{errors.submit}</span>}
                     </div>
+                    {/* Login Button */}
                     <button
                         type="submit"
                         className="bg-black text-white w-full py-2 rounded-sm self-center font-bold"
                     >
                         Login
                     </button>
-                    <Link to='/signup' className='text-center text-sm'>
+                    {/* Register Link */}
+                    <Link to='/register' className='text-center text-sm'>
                         New here ?
                         <span className='text-blue-500'> Create new Account</span>
                     </Link>
                 </form>
+                {/* Captain Login */}
                 <Link
                     to='/captain-login'
                     className='bg-green-700 text-white text-xl w-full text-center  py-2 rounded-lg font-bold'

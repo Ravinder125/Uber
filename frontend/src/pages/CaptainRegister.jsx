@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const CaptainSignup = () => {
+const CaptainRegister = () => {
     const [formData, setFormData] = useState({
         email: '',
         fullname: {
@@ -84,7 +84,7 @@ const CaptainSignup = () => {
 
         // Update form data
         if (name.includes('vehicle.')) {
-            name.includes('vehicle.capacity')
+            // No operation needed here
             const [, field] = name.split('.');
             setFormData(prev => ({ ...prev, vehicle: { ...prev.vehicle, [field]: isNaN(parseInt(value)) ? value : parseInt(value) } }));
 
@@ -95,8 +95,8 @@ const CaptainSignup = () => {
         }
 
         // Validate field
-        const error = validateField(name, value);
-        setErrors(prev => ({ ...prev, [name]: error }));
+
+        setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
     };
 
     const resetForm = () => {
@@ -241,6 +241,8 @@ const CaptainSignup = () => {
                     {/* Vehicle Details Section */}
                     <div className='flex flex-col gap-2'>
                         <label className="font-semibold text-lg">Vehicle Details</label>
+
+                        {/* Vehicle color */}
                         <input
                             type="text"
                             name="vehicle.color"
@@ -252,6 +254,7 @@ const CaptainSignup = () => {
                         />
                         {errors.vehicle.color && <span className="text-red-500 text-sm">{errors.vehicle.color}</span>}
 
+                        {/* Vehicle type and plate number */}
                         <input
                             type="text"
                             name="vehicle.plate"
@@ -281,17 +284,22 @@ const CaptainSignup = () => {
                         <div className="text-red-500 text-sm text-center">{errors.submit}</div>
                     )}
                     <div className='flex flex-col'>
+
+                        {/* Submit button */}
                         <button type="submit" className="bg-black text-white py-2 rounded-sm font-bold">
                             Register as Captain
                         </button>
-                        <Link to='/captain-login' className='text-center text-sm'>
+
+                        {/* Login link */}
+                        <Link to='/captain-login' className='mt-2 text-center text-sm'>
                             Already a captain? <span className='text-blue-500'>Login here</span>
                         </Link>
 
                     </div>
                 </form>
 
-                <Link to='/signup' className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'>
+                {/* User Register Link */}
+                <Link to='/register' className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'>
                     Register as User
                 </Link>
             </div>
@@ -299,4 +307,4 @@ const CaptainSignup = () => {
     );
 };
 
-export default CaptainSignup;
+export default CaptainRegister;
