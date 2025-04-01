@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Meta, useNavigate } from 'react-router-dom';
 import { userContext } from '../context/UserContext';
 
 
@@ -109,14 +109,16 @@ const UserSignup = () => {
             setFormData(updatedFormData);
 
             console.log('Updated Form Data:', updatedFormData);
-
+            /*|| 'http://localhost:3000/api/v1'*/
             try {
-                const response = await axios.post('http://localhost:3000/api/v1/users/register', updatedFormData)
+                const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, updatedFormData)
+                const { data } = response.data;
+                console.log(data)
                 console.log(response)
                 navigate('/login')
             } catch (error) {
-                console.log(error)
-                setErrors(prev => ({ ...prev, submit: error.response.data.message }))
+                console.log('Error:', error)
+                setErrors(prev => ({ ...prev, submit: error?.response?.data?.message }))
 
             } finally {
                 resetForm();

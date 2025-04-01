@@ -31,8 +31,6 @@ router.post('/register', [
     captainController.registerCaptain
 )
 router.post('/login', [
-    body('email')
-        .isEmail().withMessage('Invalid email'),
     body('password')
         .isLength({ min: 8, max: 50 }).withMessage('Password must be at least 8 characters long')
 ],

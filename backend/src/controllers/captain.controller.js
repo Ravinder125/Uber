@@ -50,12 +50,14 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
         return res.status(400).json(ApiResponse.error(400, errors.array().map(err => err.msg), 'Validation error'));
     }
 
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, tel, password } = req.body;
+    if (!password) {
         return res.status(400).json(ApiResponse.error(400, 'Email and password fields are required'));
     }
+    if (!tel && !email) return res.status(400).json(ApiResponse.error(400, 'Phone number or email is required', 'Phone number or email is required'));
 
-    const captain = await captainModel.findOne({ email });
+    const captain = await captainModel.findOne({ $or: [{ email }, { tel }] }).select('+password');
+    console.log(captain)
     if (!captain || !(await captain.isPasswordCorrect(password))) {
         return res.status(400).json(ApiResponse.error(400, 'Invalid email or password', 'Invalid email or password'));
     }

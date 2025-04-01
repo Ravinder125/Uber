@@ -9,7 +9,6 @@ const UserLogin = () => {
         tel: '',
         password: ''
     });
-    const [telCode, setTelCode] = useState('+91');
     const [loginMethod, setLoginMethod] = useState('email');
     const [errors, setErrors] = useState({});
 
@@ -72,16 +71,19 @@ const UserLogin = () => {
 
         const finalData = loginMethod === 'email'
             ? { email: formData.email, password: formData.password }
-            : { telCode: formData.telCode, tel: formData.tel, password: formData.password };
+            : { telCode: formData.telCode || '+91', tel: formData.tel, password: formData.password };
 
         console.log(finalData);
         console.log('Form submitted');
 
         try {
-            const response = await axios.post('http://localhost:3000/api/v1/users/login', finalData);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, finalData);
             console.log(response.data);
         } catch (error) {
-            console.log('Error:', error);
+            const errorMessage = error.response?.data?.error > 1 ? error.response.data.error : error.response.data.message;
+            console.log('Error:', errorMessage || error);
+
+            setErrors({ submit: errorMessage || 'An unexpected error occurred' })
 
         } finally {
             resetForm();
@@ -98,7 +100,7 @@ const UserLogin = () => {
                     alt="uber-logo-captain"
                     className='w-18 self-center'
                 />
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
                     <div
                         className="text-gray-500 underline w-fit cursor-pointer"
                         onClick={toggleLoginMethod}
@@ -106,7 +108,7 @@ const UserLogin = () => {
                         Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
                     </div>
                     {loginMethod === 'email' ? (
-                        <div className="flex gap-3 justify-center">
+                        <div className="flex flex-col  gap-3 justify-center">
                             <input
                                 type="email"
                                 name="email"
@@ -123,12 +125,12 @@ const UserLogin = () => {
                             <select
                                 name="country"
                                 className="w-22 bg-gray-200 rounded-sm text-center"
-                                value={telCode}
-                                onChange={e => setPhoneCode(e.target.value)}
+                                value={formData.telCode}
+                                onChange={handleInputChange}
                                 required
                             >
                                 {Object.keys(telephoneCodes).map((flag) => (
-                                    <option key={flag} value={phoneCodes[flag]}>{flag} {phoneCodes[flag]}</option>
+                                    <option key={flag} value={telephoneCodes[flag]}>{flag} {telephoneCodes[flag]}</option>
                                 ))}
                             </select>
                             <input
@@ -155,6 +157,9 @@ const UserLogin = () => {
                         />
                         {errors.password && <span className="text-red-500">{errors.password}</span>}
                     </div>
+                    <div>
+                        {errors.submit && <span className="text-red-500 text-base">{errors.submit}</span>}
+                    </div>
                     <button
                         type="submit"
                         className="bg-black text-white w-full py-2 rounded-sm self-center font-bold"
@@ -170,8 +175,8 @@ const UserLogin = () => {
                     to='/captain-login'
                     className='bg-green-700 text-white text-xl w-full text-center  py-2 rounded-lg font-bold'
                 >Login as Captain</Link>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

@@ -40,7 +40,7 @@ const CaptainSignup = () => {
             plate: '',
         },
     });
-
+    const navigate = useNavigate();
     const telephoneCodes = {
         '🇮🇳': '+91',
         '🇬🇧': '+44',
@@ -142,17 +142,18 @@ const CaptainSignup = () => {
         e.preventDefault();
 
         const submitData = { ...formData, telCode: !formData.telCode ? '+91' : formData.telCode, };
+        console.log(submitData);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/v1/captains/register', submitData);
-            if (response.data.success) {
-                console.log('Registration successful:', response.data);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}`, submitData);
+            const { data } = response.data;
+            console.log('Captain registered successfully:', data.newCaptain);
+            alert('Captain registered successfully');
 
-            }
-
+            navigate('/captain-login');
         } catch (error) {
             console.log('Error:', error);
-            setErrors(prev => ({ ...prev, submit: error.response.data.message }));
+            setErrors(prev => ({ ...prev, submit: error.response.data?.message }));
         } finally {
             resetForm();
         }

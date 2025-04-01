@@ -1,14 +1,16 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const CaptainLogin = () => {
-    const [FormData, setFormData] = useState({})
-    const [toggle, setToggle] = useState('number'); // Use consistent casing for setToggle
-
-    const [email, setEmail] = useState('')
-    const [phoneCode, setPhoneCode] = useState('+91'); // Default value for better UX
-    const [phoneNumber, setPhoneNumber] = useState('')
-    const [password, setPassword] = useState('')
+    const [FormData, setFormData] = useState({
+        email: '',
+        telCode: '',
+        tel: '',
+        password: ''
+    });
+    const [loginMethod, setLoginMethod] = useState('email');
+    const [errors, setErrors] = useState({});
 
     const phoneCodes = {
         '🇮🇳': '+91',
@@ -17,30 +19,55 @@ const CaptainLogin = () => {
         '🇦🇺': '+61',
     };
 
-    const toggleEmailToNumber = () => {
-        setToggle(prev => prev === 'number' ? 'email' : 'number');
-        toggle === 'number' ? setPhoneNumber('') : setEmail('')
-        console.log({ email, password, phoneCode, phoneNumber })
+    const resetForm = () => {
+        setFormData({ email: '', telCode: '', tel: '', password: '' });
+        setErrors({});
+    }
+    const loginMethodEmailToNumber = () => {
+        setLoginMethod(prev => prev === 'number' ? 'email' : 'number');
+    };
+
+    const validationField = (name, value) => {
+        if (!value?.trim()) return '';
+        switch (name) {
+            case 'email':
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Please enter a valid email';
+            case 'password':
+                return value.length >= 8 ? '' : 'Password must be at least 8 characters long';
+            case 'tel':
+                return /^\d{10}$/.test(value) ? '' : 'Phone number must be 10 digits long';
+            default:
+                return '';
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setErrors(prev => ({ ...prev, [name]: validationField(name, value) }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const loginData = toggle === 'email'
-            ? { email, password }
-            : { phoneNumber: phoneCode + phoneNumber, password };
-        setFormData(loginData);
-        console.log(FormData)
+        const loginData = loginMethod === 'email'
+            ? { email: FormData.email, password: FormData.password }
+            : { phoneNumber: FormData.telCode + FormData.tel, password: FormData.password };
+
         try {
-            // Add captain login API call here
-            console.log('Captain Login Data:', loginData);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, loginData);
+            console.log('Captain logged in successfully:', response.data);
         } catch (error) {
-            setErrors({ submit: error.message });
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Login failed';
+            console.log('Error:', error)
+            setErrors({ submit: errorMessage });
+        } finally {
+            resetForm();
         }
     };
 
     return (
         <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 w-96 justify-center sm:bg-gray-100 flex gap-10 flex-col ">
+            <div className="p-6 w-96 justify-center sm:bg-gray-100 flex gap-10 flex-col">
                 <img
                     src="./uber-logo.png"
                     alt="uber-logo-captain"
@@ -49,64 +76,64 @@ const CaptainLogin = () => {
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <div
                         className="text-gray-500 underline w-fit cursor-pointer"
-                        onClick={toggleEmailToNumber}
+                        onClick={loginMethodEmailToNumber}
                     >
-                        Login with {toggle === 'email' ? 'number' : 'email'} ?
+                        Login with {loginMethod === 'email' ? 'number' : 'email'}?
                     </div>
-                    {/* <label htmlFor="contact" className="font-semibold text-lg">
-                        Enter your {toggle === 'email' ? 'email' : 'phone number'}
-                    </label> */}
-                    {toggle === 'email' ? (
-                        <div className="flex gap-3 justify-center">
+                    {loginMethod === 'email' ? (
+                        <div className="flex gap-3 flex-col justify-center">
                             <input
                                 type="email"
                                 name="email"
                                 placeholder="Enter your email - example@gmail.com"
                                 className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={FormData.email}
+                                onChange={handleInputChange}
                                 required
                             />
+                            {errors.email && <div className='text-red-500 text-base'>{errors.email}</div>}
                         </div>
                     ) : (
-                        <div className="flex gap-3 justify-center">
-                            <select
-                                name="country"
-                                className="w-22 bg-gray-200 rounded-sm text-center"
-                                value={phoneCode}
-                                onChange={e => setPhoneCode(e.target.value)} // Use onChange instead of onClick
-                                required
-                            >
-                                {Object.keys(phoneCodes).map((flag) => (
-                                    <option value={phoneCodes[flag]}>{flag} {phoneCodes[flag]}</option>
-
-                                ))}
-                            </select>
-                            <input
-                                type="tel"
-                                name="tel"
-                                placeholder="Enter your number - 123-456-7890"
-                                className="bg-gray-200 w-72 rounded-sm p-2 placeholder:text-gray-800"
-                                value={phoneNumber}
-                                onChange={e => setPhoneNumber(e.target.value)}
-                                required
-                            />
+                        <div className='flex flex-col gap-2'>
+                            <div className="flex gap-3 justify-center">
+                                <select
+                                    name="telCode"
+                                    className="w-22 bg-gray-200 rounded-sm text-center"
+                                    value={FormData.telCode}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    {Object.entries(phoneCodes).map(([flag, code]) => (
+                                        <option key={code} value={code}>{flag} {code}</option>
+                                    ))}
+                                </select>
+                                <input
+                                    type="tel"
+                                    name="tel"
+                                    placeholder="Enter your number - 123-456-7890"
+                                    className="bg-gray-200 w-72 rounded-sm p-2 placeholder:text-gray-800"
+                                    value={FormData.tel}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            {errors.tel && <div className='text-red-500 text-base'>{errors.tel}</div>}
                         </div>
+
                     )}
-                    <div
-                        className='flex flex-col gap-2'>
-                        {/* <label htmlFor="password" className="font-semibold text-lg">Enter your password</label> */}
+                    <div className='flex flex-col gap-2'>
                         <input
                             type="password"
                             name="password"
                             placeholder="Enter your password - paglu123@"
                             className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            value={FormData.password}
+                            onChange={handleInputChange}
                             required
-
                         />
+                        {errors.password && <div className='text-red-500 text-base'>{errors.password}</div>}
                     </div>
+                    {errors.submit && <div className='text-red-500 text-base'>{errors.submit}</div>}
                     <button
                         type="submit"
                         className="bg-black text-white w-full py-2 rounded-sm self-center font-bold"
@@ -114,14 +141,15 @@ const CaptainLogin = () => {
                         Login
                     </button>
                     <Link to='/captain-signup' className='text-center text-sm'>
-                        New here ?
-                        <span className='text-blue-500'> Create new Account</span>
+                        New here? <span className='text-blue-500'>Create new Account</span>
                     </Link>
                 </form>
                 <Link
                     to='/login'
-                    className='bg-green-700 text-white text-xl w-full text-center  py-2 rounded-lg font-bold'
-                >Login as User</Link>
+                    className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'
+                >
+                    Login as User
+                </Link>
             </div>
         </div>
     );
