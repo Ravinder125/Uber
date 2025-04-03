@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
@@ -9,6 +9,8 @@ const UserLogin = () => {
         tel: '',
         password: ''
     });
+
+    const navigate = useNavigate()
     const [loginMethod, setLoginMethod] = useState('email');
     const [errors, setErrors] = useState({});
 
@@ -78,6 +80,9 @@ const UserLogin = () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, finalData);
             console.log('User successfully registerd:', response.data);
+
+            navigate('/home');
+
         } catch (error) {
             const errorMessage = error.response?.data?.error > 1 ? error.response.data.error : error.response.data.message;
             console.log('Error:', errorMessage || error);

@@ -15,17 +15,17 @@ const corsOptions = {
         }
     }
 }
-// app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const authRoutes = require('./src/routes/auth.routes');
 const userRoutes = require('./src/routes/user.routes');
-const captainRoutes = require('./src/routes/captain.routes')
+const captainRoutes = require('./src/routes/captain.routes');
 
-
+app.use('/api/v1/auths', authRoutes);
 app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/captains', captainRoutes)
+app.use('/api/v1/captains', captainRoutes);
 
 module.exports = app;
