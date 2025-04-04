@@ -112,9 +112,12 @@ const UserSignup = () => {
             /*|| 'http://localhost:3000/api/v1'*/
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, updatedFormData)
-                const { data } = response.data;
-                console.log(data)
-                console.log(response)
+                const { data, token } = response.data;
+
+                localStorage.setItem('token', token);
+                console.log('User successfully registered:', data);
+
+                // Redirect to login page after successful registration
                 navigate('/login')
             } catch (error) {
                 console.log('Error:', error)
