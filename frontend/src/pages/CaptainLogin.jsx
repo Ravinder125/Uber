@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CaptainLogin = () => {
     const [FormData, setFormData] = useState({
@@ -11,6 +11,7 @@ const CaptainLogin = () => {
     });
     const [loginMethod, setLoginMethod] = useState('email');
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const phoneCodes = {
         '🇮🇳': '+91',
@@ -56,9 +57,17 @@ const CaptainLogin = () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, loginData);
             console.log('Captain logged in successfully:', response.data);
+
+            const { token, captain } = response.data.data;
+
+            console.log('Captain token at login:', token);
+
+            localStorage.setItem('captain-token', token);
+            navigate('/captain-home');
         } catch (error) {
             const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Login failed';
             console.log('Error:', error)
+
             setErrors({ submit: errorMessage });
         } finally {
             resetForm();
@@ -74,7 +83,6 @@ const CaptainLogin = () => {
                     alt="uber-logo-captain"
                     className="w-18 self-center"
                 />
-
                 {/* Login Form */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     {/* Toggle Login Method */}
@@ -163,7 +171,7 @@ const CaptainLogin = () => {
                     </button>
 
                     {/* Signup Link */}
-                    <Link to="/captain-signup" className="text-center text-sm">
+                    <Link to="/captain-register" className="text-center text-sm">
                         New here?{" "}
                         <span className="text-blue-500">Create new Account</span>
                     </Link>
@@ -171,7 +179,7 @@ const CaptainLogin = () => {
 
                 {/* User Login Link */}
                 <Link
-                    to="/login"
+                    to='/login'
                     className="bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold"
                 >
                     Login as User

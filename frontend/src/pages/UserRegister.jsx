@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import { Link, Meta, useNavigate } from 'react-router-dom';
-import { userContext } from '../context/UserContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { userDataContext } from '../context/UserContext';
 
 
 const UserSignup = () => {
-    const userData = useContext(userContext);
+    const { user, setUser } = useContext(userDataContext);
     // console.log(userData)
     const [formData, setFormData] = useState({
         username: '',
@@ -109,13 +109,15 @@ const UserSignup = () => {
             setFormData(updatedFormData);
 
             console.log('Updated Form Data:', updatedFormData);
-            /*|| 'http://localhost:3000/api/v1'*/
+
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, updatedFormData)
                 const { data, token } = response.data;
 
-                localStorage.setItem('token', token);
-                console.log('User successfully registered:', data);
+                setUser(data);
+                localStorage.setItem('user-token', token);
+
+                console.log('User successfully registered:', user);
 
                 // Redirect to login page after successful registration
                 navigate('/login')

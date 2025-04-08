@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import { data, Link, useNavigate } from 'react-router-dom';
-import userContext from '../context/UserContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { userDataContext } from '../context/UserContext';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
@@ -11,7 +11,7 @@ const UserLogin = () => {
         password: ''
     });
 
-    const userData = useContext(userContext);
+    const { user, setUser } = useContext(userDataContext);
 
     const navigate = useNavigate()
     const [loginMethod, setLoginMethod] = useState('email');
@@ -82,24 +82,24 @@ const UserLogin = () => {
 
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, finalData);
-            console.log('User successfully logged in:', response.data);
-
             const { token, user } = response.data.data;
-            localStorage.setItem('token', token);
+            setUser(user);
+
+            console.log('User successfully logged in:', user);
+            console.log('User token at login:', token);
+
+            localStorage.setItem('user-token', token);
 
             navigate('/home');
 
         } catch (error) {
-            const errorMessage = error.response?.data?.error > 1 ? error.response?.data?.error : error.response.data.message;
-            console.log('Error:', errorMessage || error);
+            console.log('Error:', error);
 
-            setErrors({ submit: errorMessage || 'An unexpected error occurred' })
+            // setErrors({ submit: errorMessage || 'An unexpected error occurred' })
 
         } finally {
             resetForm();
         }
-
-
     };
 
     return (

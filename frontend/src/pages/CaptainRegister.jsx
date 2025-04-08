@@ -145,10 +145,16 @@ const CaptainRegister = () => {
         console.log(submitData);
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}`, submitData);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, submitData);
             const { data } = response.data;
             console.log('Captain registered successfully:', data.newCaptain);
+
             alert('Captain registered successfully');
+
+            const token = response.data.token;
+            
+            localStorage.setItem('captain-token', token);
+            console.log('Captain token at register:', token)
 
             navigate('/captain-login');
         } catch (error) {
