@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { registerCaptain } from '../services/captain.service';
 
 const CaptainRegister = () => {
     const [formData, setFormData] = useState({
