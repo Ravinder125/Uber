@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
+import { registerUser } from '../services/user.service';
 
 
 const UserSignup = () => {
@@ -99,37 +100,42 @@ const UserSignup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log('Form submitted:', formData);
-
         const username = generateUsername(formData.fullname.firstname);
 
-        if (username) {
-            const updatedFormData = { ...formData, username, telCode: formData.telCode ? formData.telCode : '+91' };
+        if (!username) {
+            alert('Failed to generate a username. Please try again.');
+            return;
+        }
 
+        const updatedFormData = {
+            ...formData,
+            username,
+            telCode: formData.telCode || '+91', // Default to '+91' if no telCode is selected
+        };
+
+        try {
             setFormData(updatedFormData);
-
             console.log('Updated Form Data:', updatedFormData);
 
-            try {
-                const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, updatedFormData)
-                const { data, token } = response.data;
+            const response = await registerUser(updatedFormData);
 
-                setUser(data);
+            if (response.status === 201) {
+                const { token, user } = response.data.data;
                 localStorage.setItem('user-token', token);
-
+                setUser(user);
                 console.log('User successfully registered:', user);
 
                 // Redirect to login page after successful registration
-                navigate('/login')
-            } catch (error) {
-                console.log('Error:', error)
-                setErrors(prev => ({ ...prev, submit: error?.response?.data?.message }))
-
-            } finally {
-                resetForm();
+                navigate('/login');
             }
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'An error occurred during registration';
+            console.error('Error:', error.response?.data?.error || error);
+            alert(errorMessage);
+        } finally {
+            resetForm();
         }
-    }
+    };
     return (
         <div className='flex h-screen justify-center items-center'>
             <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-10 justify-center items-center">

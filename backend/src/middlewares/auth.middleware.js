@@ -8,7 +8,7 @@ const { ApiResponse } = require('../utils/ApiResponse');
 const UNAUTHORIZED_RESPONSE = ApiResponse.error(401, 'Unauthorized request', 'Unauthorized request');
 const authMiddleware = (model, userType) => asyncHandler(async (req, res, next) => {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-
+    console.log('token:', token);
     if (!token) {
         return res.status(401).json(UNAUTHORIZED_RESPONSE)
     }

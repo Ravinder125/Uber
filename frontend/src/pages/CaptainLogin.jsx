@@ -59,17 +59,24 @@ const CaptainLogin = () => {
             : { phoneNumber: FormData.telCode + FormData.tel, password: FormData.password };
 
         try {
-            const { token, captain } = await loginCaptain(loginData);
-            setCaptain(captain);
-            localStorage.setItem('captain-token', token);
-            navigate('/captain-home');
-        } catch (error) {
-            console.log('Error:', error.response?.data?.message || error);
-        } finally {
-            resetForm();
-        }
-    };
+            const response = await loginCaptain(loginData)
 
+            if (response.status === 200) {
+                const { token, captain } = response.data.data;
+                setCaptain(captain);
+                localStorage.setItem('captain-token', token);
+                navigate('/captain-home');
+            }
+
+        }
+        catch (error) {
+            console.log('Error:', error);
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again.';
+            alert(errorMessage);
+        }
+
+
+    }
     return (
         <div className="flex h-screen justify-center items-center">
             <div className="p-6 w-96 sm:bg-gray-100 flex flex-col gap-10">

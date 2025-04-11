@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
+import { loginUser } from '../services/user.service';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
@@ -75,30 +76,26 @@ const UserLogin = () => {
         e.preventDefault();
 
         const finalData = loginMethod === 'email'
-            ? { email: formData.email, password: formData.password }
-            : { telCode: formData.telCode || '+91', tel: formData.tel, password: formData.password };
-
-        console.log(finalData);
+            ? { email: formData.email.trim(), password: formData.password }
+            : { telCode: formData.telCode || '+91', tel: formData.tel.trim(), password: formData.password };
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, finalData);
-            const { token, user } = response.data.data;
-            setUser(user);
+            const response = await loginUser(finalData);
 
-            console.log('User successfully logged in:', user);
-            console.log('User token at login:', token);
+            if (response.status === 200) {
+                const { token, user } = response.data.data;
+                localStorage.setItem('user-token', token);
+                setUser(user);
+                console.log('User successfully logged in:', user);
 
-            localStorage.setItem('user-token', token);
-
-            navigate('/home');
-
+                // Redirecting to home page after successful login
+                navigate('/home');
+            }
         } catch (error) {
-            console.log('Error:', error);
-
-            // setErrors({ submit: errorMessage || 'An unexpected error occurred' })
-
-        } finally {
-            resetForm();
+            console.error('Login error:', error);
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again.';
+            alert(errorMessage);
+            // setErrors(prev => ({ ...prev, submit: errorMessage }));
         }
     };
 

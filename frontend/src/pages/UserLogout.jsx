@@ -1,40 +1,37 @@
 import axios from 'axios'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { logoutUser } from '../services/user.service'
 
 const UserLogout = () => {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        try {
-            const token = localStorage.getItem('user-token');
-            if (!token) {
-                alert('No token found. Redirecting to login page.');
-                return navigate('/login');
 
-            }
+        const token = localStorage.getItem('user-token');
+        if (!token) {
+            alert('No token found. Redirecting to login page.');
+            return navigate('/login');
 
-            await axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    if (response.status === 200) {
-                        console.log('User successfully logged out:', response.data);
-                        localStorage.removeItem('user-token');
-                        navigate('/login');
-                    }
-                })
-                .catch(error => {
-                    console.log('Error logging out:', error);
-                })
-                
-            localStorage.removeItem('user-token');
-            navigate('/login');
-        } catch (error) {
-            console.log(error);
         }
+
+        // await axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     }
+        // })
+        try {
+            const response = await logoutUser();
+            if (response.status === 200) {
+                console.log('User successfully logged out:', response.data);
+                localStorage.removeItem('user-token');
+                navigate('/login'); // Redirecting to login page after successful logout
+            }
+        } catch (error) {
+            console.error('Error logging out:', error);
+            alert('Failed to log out. Please try again.');
+        }
+
     }
     return (
         <div>
