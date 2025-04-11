@@ -121,7 +121,7 @@ const UserLogin = () => {
                                 type="email"
                                 name="email"
                                 placeholder="Enter your email - example@gmail.com"
-                                className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
+                                className="bg-gray-200 rounded-sm p-2 w-full border-gray-300 placeholder:text-gray-800"
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 required

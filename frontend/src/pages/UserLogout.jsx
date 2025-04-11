@@ -22,8 +22,14 @@ const UserLogout = () => {
                 navigate('/login'); // Redirecting to login page after successful logout
             }
         } catch (error) {
-            console.error('Error logging out:', error);
-            alert('Failed to log out. Please try again.');
+            console.log('Error logging out:', error);
+            localStorage.removeItem('user-token');
+
+            const errorMessage = error.response?.data?.message || 'An error occurred during logout'
+            alert(errorMessage);
+
+            // Redirecting to login page if an error occurs
+            navigate('/login')
         }
 
     }

@@ -22,7 +22,6 @@ const CaptainLogout = () => {
             navigate('/captain-login');
             return;
         }
-
         try {
             const response = await logoutCaptain();
             if (response.status === 200) {

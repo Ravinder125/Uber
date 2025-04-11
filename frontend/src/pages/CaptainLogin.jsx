@@ -3,6 +3,8 @@ import React, { useState, useContext } from 'react';
 import { CaptainDataContext } from '../context/CaptainContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginCaptain } from '../services/captain.service';
+import Loading from '../features/Loading';
+
 
 const CaptainLogin = () => {
     const [FormData, setFormData] = useState({
@@ -13,6 +15,7 @@ const CaptainLogin = () => {
     });
     const { captain, setCaptain } = useContext(CaptainDataContext);
     const [loginMethod, setLoginMethod] = useState('email');
+    const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
@@ -59,6 +62,7 @@ const CaptainLogin = () => {
             : { phoneNumber: FormData.telCode + FormData.tel, password: FormData.password };
 
         try {
+            setIsLoading(true);
             const response = await loginCaptain(loginData)
 
             if (response.status === 200) {
@@ -73,9 +77,19 @@ const CaptainLogin = () => {
             console.log('Error:', error);
             const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again.';
             alert(errorMessage);
+        } finally {
+            resetForm();
+            setIsLoading(false);
         }
 
 
+    }
+    if (isLoading) {
+        return (
+            <>
+                <Loading />
+            </>
+        )
     }
     return (
         <div className="flex h-screen justify-center items-center">
