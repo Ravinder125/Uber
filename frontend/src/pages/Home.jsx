@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import 'remixicon/fonts/remixicon.css'
+import 'remixicon/fonts/remixicon.css';
 import LocationSearchPanel from '../components/LocationSearchPanel';
-
+import VehiclePanel from '../components/VehiclePanel';
 
 const Home = () => {
     const [pickup, setPickup] = useState('');
     const [destination, setDestination] = useState('');
     const [panelOpen, setPanelOpen] = useState(false);
+    const [vehiclePanel, setVehiclePanel] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,47 +17,42 @@ const Home = () => {
             destination
         };
 
-        console.log(data); // optional: for debugging
+        console.log(data);
     };
 
     return (
-        <div>
+        <div className="relative">
+            {/* Logo */}
             <img
                 src="./uber-logo.png"
                 alt="uber-logo"
-                className='w-18 absolute left-5 top-5 self-center'
+                className="w-18 absolute left-5 top-5 z-20"
             />
-            <div className='h-screen'>
-                <img
-                    src="./map.gif"
-                    alt="map"
-                    className='w-full h-full object-cover'
-                />
-            </div>
-            <div
-                className={`absolute transition-all duration-500 ease-in-out bg-white bottom-0 w-full p-6 ${panelOpen ? 'h-screen' : 'h-auto'}`}
-            >
-                <div className='h-[30%] '>
-                    {panelOpen ? (<h5
-                        className='hover:bg-gray-200 w-fit rounded-full px-2 py-1 cursor-pointer'
-                        onClick={() => setPanelOpen(prev => !prev)}
+
+            {/* Background Map */}
+            <div className="h-screen"><img src="./map.gif" alt="map" className="w-full h-full object-cover" /></div>
+
+            {/* Sliding Panel */}
+            <div className={`absolute left-0 w-full transition-all duration-500 ease-in-out bg-white p-6 ${panelOpen ? 'top-0 h-screen' : 'top-[68%] h-auto'} z-30`} >
+                {/* Header & Form */}
+                <div className="transition-all duration-500 ease-in-out">
+                    <h5
+                        className="hover:bg-gray-200 w-fit rounded-full px-2 py-1 cursor-pointer"
+                        onClick={() => {
+                            setPanelOpen(!panelOpen)
+                            setVehiclePanel(false)
+                        }}
                     >
-                        <i className="ri-arrow-down-wide-line "></i>
-                    </h5>) :
-                        (<h5
-                            className='hover:bg-gray-200 w-fit rounded-full px-2 py-1 cursor-pointer'
-                            onClick={() => setPanelOpen(prev => !prev)}
-                        >
-                            <i className="ri-arrow-up-wide-line "></i>
-                        </h5>)}
-                    <h4 className='text-2xl font-bold mb-3'>Find a trip</h4>
-                    <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
+                        <i className={`ri-arrow-${panelOpen ? 'down' : 'up'}-wide-line`}></i>
+                    </h5>
+                    <h4 className="text-2xl font-bold mb-3">Find a trip</h4>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                         <input
                             type="text"
                             name="pickup"
-                            placeholder='Add a pickup-location'
+                            placeholder="Add a pickup location"
                             required
-                            className='w-full text-center bg-gray-200 p-2 border border-gray-300 rounded'
+                            className="w-full text-center bg-gray-200 p-2 border border-gray-300 rounded"
                             value={pickup}
                             onChange={(e) => setPickup(e.target.value)}
                             onClick={() => setPanelOpen(true)}
@@ -64,22 +60,28 @@ const Home = () => {
                         <input
                             type="text"
                             name="destination"
-                            placeholder='Enter your destination'
+                            placeholder="Enter your destination"
                             required
-                            className='w-full text-center bg-gray-200 p-2 border border-gray-300 rounded placeholder:text-gray-800'
+                            className="w-full text-center bg-gray-200 p-2 border border-gray-300 rounded placeholder:text-gray-800"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
                             onClick={() => setPanelOpen(true)}
                         />
-                        {!panelOpen ? <div className="line absolute w-1 h-18 left-8 top-28 bg-black rounded-full "></div> : null}
+                        <div
+                            className={`absolute left-8 bg-black rounded-full transition-all duration-500 ease-in-out ${panelOpen ? 'h-0 w-0' : 'h-18 w-1 top-28'
+                                }`}
+                        ></div>
                     </form>
                 </div>
-                <div
-                    className={`overflow-hidden  rounded-xl transition-all duration-200 ease-in-out ${panelOpen ? 'h-[70%] opacity-100' : 'h-0 opacity-0'}`}>
-                    <LocationSearchPanel />
+                {/* Search Panel */}
+                <div className={`overflow-hidden flex justify-center items-center rounded-xl transition-all duration-500 ease-in-out  ${panelOpen ? 'h-[70%] mt-4' : 'h-0'}`}>
+                    <LocationSearchPanel location={{ vehiclePanel, setVehiclePanel }} />
+                </div>
+                <div className={`h-[70%] fixed flex justify-around z-20 bg-white left-0 w-full p-3 py-8 flex-col mt-6 transition-all duration-500 ease-in-out ${vehiclePanel ? 'bottom-0' : 'bottom-[-70%]'}`}>
+                    <VehiclePanel />
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

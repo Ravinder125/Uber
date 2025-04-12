@@ -17,13 +17,12 @@ const UserProtectWrapper = ({ children }) => {
                 return navigate('/login');
             }
             try {
-                // const response = await isUserLoggedIn();
                 const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auths/is-user-logged-in`, {
                     headers: {
                         Authorization: `Bearer ${token}`
-                    }
-                }
-                )
+                    },
+                    withCredentials: true
+                });
                 if (response.status === 200) {
                     console.log('User token is valid:', response.data);
                 }

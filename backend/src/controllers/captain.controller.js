@@ -13,8 +13,8 @@ const generateAuthToken = async (captainId) => {
 
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None',
+        secure: true,
+        sameSite: 'Lax',
     };
 
     return { options, token };

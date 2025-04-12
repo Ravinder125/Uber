@@ -13,7 +13,8 @@ const corsOptions = {
         } else {
             callback(new Error('Not allowed by CORS'));
         }
-    }
+    },
+    credentials: true
 }
 app.use(cors(corsOptions));
 app.use(express.json());
