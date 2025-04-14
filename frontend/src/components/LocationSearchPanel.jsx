@@ -9,7 +9,8 @@ const LocationSearchPanel = (props) => {
         "A-194, Stree no. 2, pust 0, Soniya Vihar, Karawal nagar, North East delhi",
     ]
 
-    const { vehiclePanel, setVehiclePanel } = props.location
+    const { setVehiclePanel } = props.setVehiclePanel
+    const { setPanelOpen } = props.panel
     return (
         <div className='overflow-y-auto h-[85%] py-3 '>
             {/* This is just a example of location search panel */}
@@ -18,7 +19,10 @@ const LocationSearchPanel = (props) => {
                     <div
                         key={index}
                         className='flex hover:bg-gray-50 active:bg-gray-200 flex-colr gap-3 p-3 justify-center items-center mt-1 border-b-1 border-gray-200 '
-                        onClick={() => setVehiclePanel(prev => !prev)}
+                        onClick={() => {
+                            setVehiclePanel(prev => !prev)
+                            setPanelOpen(false)
+                        }}
                     >
                         <h4 className='bg-gray-200 px-3 py-2 rounded-full text-xl w-fit'><i class="ri-map-pin-2-fill"></i></h4>
                         <div className='flex flex-col text-sm'>

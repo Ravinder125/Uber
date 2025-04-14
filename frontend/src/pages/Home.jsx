@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import LocationSearchPanel from '../components/LocationSearchPanel';
 import VehiclePanel from '../components/VehiclePanel';
+import ComfirmRide from '../components/ComfirmRide';
+import LookingForDriver from '../components/LookingForDriver';
+import WaitingForDriver from '../components/WaitingForDriver';
 
 const Home = () => {
     const [pickup, setPickup] = useState('');
     const [destination, setDestination] = useState('');
     const [panelOpen, setPanelOpen] = useState(false);
     const [vehiclePanel, setVehiclePanel] = useState(false);
+    const [comfirmRide, setComfirmRide] = useState(false);
+    const [vehicleFound, setVehicleFound] = useState(false)
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -19,6 +24,7 @@ const Home = () => {
 
         console.log(data);
     };
+
 
     return (
         <div className="relative">
@@ -74,11 +80,21 @@ const Home = () => {
                     </form>
                 </div>
                 {/* Search Panel */}
-                <div className={`overflow-hidden flex justify-center items-center rounded-xl transition-all duration-500 ease-in-out  ${panelOpen ? 'h-[70%] mt-4' : 'h-0'}`}>
-                    <LocationSearchPanel location={{ vehiclePanel, setVehiclePanel }} />
+                <div className={`overflow-hidden flex justify-center items-center rounded-xl transition-all duration-500 ease-in-out  ${panelOpen ? 'h-[70%] mt-4' : 'h-0'}`}
+                >
+                    <LocationSearchPanel setVehiclePanel={{ setVehiclePanel }} panel={{ setPanelOpen }} />
                 </div>
-                <div className={`h-[70%] fixed flex justify-around z-20 bg-white left-0 w-full p-3 py-8 flex-col mt-6 transition-all duration-500 ease-in-out ${vehiclePanel ? 'bottom-0' : 'bottom-[-70%]'}`}>
-                    <VehiclePanel />
+                <div className={`h-[70%] fixed z-10 bg-white left-0 w-full transition-all duration-500 ease-in-out ${vehiclePanel ? 'bottom-0' : 'bottom-[-70%]'}`}>
+                    <VehiclePanel vehicle={{ vehiclePanel, setVehiclePanel }} panel={{ setPanelOpen }} setComfirmRide={{ setComfirmRide }} />
+                </div>
+                <div className={`fixed z-15 transition-all duration-500 ease-in-out w-full bg-white h-[70%] left-0 ${comfirmRide ? 'bottom-0' : '-bottom-200'}`}  >
+                    <ComfirmRide comfirmRide={{ comfirmRide, setComfirmRide }} setVehicleFound={{ setVehicleFound }} />
+                </div>
+                <div className={`fixed z-15 transition-all duration-500 ease-in-out w-full bg-white h-[75%] left-0 ${vehicleFound ? 'bottom-0' : '-bottom-200'}`}  >
+                    <LookingForDriver vehicleFound={{ vehicleFound, setVehicleFound }} setComfirmRide={{ setComfirmRide }} />
+                </div>
+                <div className={`fixed z-15 bottom-0 transtion-all duration-500 ease-in-out w-full bg-white h-[90%] left-0`}>
+                    <WaitingForDriver />
                 </div>
             </div>
         </div >

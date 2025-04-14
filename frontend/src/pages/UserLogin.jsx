@@ -96,6 +96,8 @@ const UserLogin = () => {
             const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again.';
             alert(errorMessage);
             // setErrors(prev => ({ ...prev, submit: errorMessage }));
+        } finally {
+            resetForm();
         }
     };
 
