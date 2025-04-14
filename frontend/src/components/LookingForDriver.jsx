@@ -12,7 +12,7 @@ const LookingForDriver = (props) => {
                     setVehicleFound(false)
                 }}
             >
-                <i className={`ri-arrow-${!vehicleFound ? 'down' : 'up'}-wide-line`}></i>
+                <i className={`ri-arrow-${vehicleFound ? 'down' : 'up'}-wide-line`}></i>
             </h5>
             <div className="text-center w-full flex flex-col items-center">
                 <h1 className="font-bold text-2xl">Looking for a driver</h1>

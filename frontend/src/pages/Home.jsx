@@ -93,7 +93,7 @@ const Home = () => {
                 <div className={`fixed z-15 transition-all duration-500 ease-in-out w-full bg-white h-[75%] left-0 ${vehicleFound ? 'bottom-0' : '-bottom-200'}`}  >
                     <LookingForDriver vehicleFound={{ vehicleFound, setVehicleFound }} setComfirmRide={{ setComfirmRide }} />
                 </div>
-                <div className={`fixed z-15 bottom-0 transtion-all duration-500 ease-in-out w-full bg-white h-[90%] left-0`}>
+                <div className={`fixed hidden z-15 bottom-0 transtion-all duration-500 ease-in-out w-full bg-white h-[90%] left-0`}>
                     <WaitingForDriver />
                 </div>
             </div>
