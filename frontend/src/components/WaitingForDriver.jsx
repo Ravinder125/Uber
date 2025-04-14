@@ -14,7 +14,7 @@ const WaitingForDriver = () => {
                     <h4>2 <br /> min</h4>
                 </div>
             </div>
-            <div className='flex flex-col gap-5 border-b border-gray-200 py-5'>
+            <div className='flex flex-col gap-3 border-b border-gray-200 py-2'>
                 <div className='flex p-3 justify-between text-end items-center'>
                     <div className='flex  '>
                         <img src="./driver.jpg" alt="man" className='w-15 h-15 z-3 object-cover rounded-full border-gray' />
@@ -57,7 +57,7 @@ const WaitingForDriver = () => {
                     </div>
                 </div>
             </div>
-            <div className='flex gap-5 items-center p-3 '>
+            <div className='flex gap-5 items-center p-5 '>
                 <h4> <i className="ri-map-pin-3-fill"></i></h4>
                 <div>
                     <h2 className='font-extrabold text-xl'>562/11-A</h2>
