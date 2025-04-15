@@ -3,6 +3,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
 import { registerUser } from '../services/user.service';
+import Input from '../components/Input';
 
 
 const UserSignup = () => {
@@ -143,31 +144,28 @@ const UserSignup = () => {
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
                     {/* Email Section */}
-                    <div className='flex flex-col gap-2'>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email - example@gmail.com"
-                            className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                            value={formData.email}
-                            required
-                            onChange={handleInputChange}
-                        />
-                        {errors.email && <div className='text-red-600 text-sm'>{errors.email}</div>}
-                    </div>
+                    <Input
+                        label='Email'
+                        type='email'
+                        name='email'
+                        placeholder='Enter your Email'
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        error={errors.email}
+                    />
 
                     {/* Name Section */}
                     <div className='flex flex-col gap-1'>
-                        <div className='flex gap-1'>
+                        <div className='flex gap-2'>
                             {['firstname', 'middlename', 'lastname'].map((name) => (
-                                <input
+                                <Input
                                     key={name}
                                     type="text"
                                     name={name}
                                     placeholder={name}
                                     className="bg-gray-200 rounded-sm p-2 w-1/3"
                                     value={formData.fullname[name]}
-                                    required={name !== 'middlename'}  // Middle name is optional
+                                    required={name !== 'middlename' ? true : false}  // Middle name is optional
                                     onChange={handleInputChange}
                                 />
                             ))}
@@ -183,8 +181,8 @@ const UserSignup = () => {
                     <div className="flex flex-col gap-2 ">
                         <div className="flex gap-2">
                             <select
-                                name="telCode"
-                                className="bg-gray-200 p-2 rounded-sm text-center "
+                                name="country"
+                                className=" bg-gray-100 border border-gray-300 rounded-sm text-center p-3 "
                                 value={formData.telCode}
                                 onChange={handleInputChange}
                                 required
@@ -195,29 +193,28 @@ const UserSignup = () => {
                                     </option>
                                 ))}
                             </select>
-                            <input
+                            <Input
+                                label='Tel'
                                 type="tel"
                                 name="tel"
-                                placeholder="Enter your tel. number - 123-456-7890"
-                                className="bg-gray-200 rounded-sm p-2 placeholder:text-gray-800 w-9/12"
+                                placeholder="Enter your number"
                                 value={formData.tel}
                                 onChange={handleInputChange}
-                                required
+                                error={errors.tel}
                             />
                         </div>
                         {errors.tel && <div className='text-red-600 text-sm'>{errors.tel}</div>}
                     </div>
                     {/* Password Section */}
-                    <input
+                    <Input
+                        label='Password'
                         type="password"
                         name="password"
-                        placeholder="Enter your password - paglu123@"
-                        className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
+                        placeholder="Enter your password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        required
+                        error={errors.password}
                     />
-                    {errors.password && <div className='text-red-600 text-sm'>{errors.password}</div>}
 
                     <button
                         type="submit"

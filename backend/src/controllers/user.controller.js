@@ -4,20 +4,21 @@ const { validationResult } = require('express-validator');
 const { createUser } = require('../services/user.service');
 const { ApiResponse } = require('../utils/ApiResponse');
 const blacklistTokenModel = require('../models/blacklistToken.model');
+const { createAuthTokenForUser } = require('../utils/generateToken')
 
-const generateAuthToken = async (userId) => {
-    const user = await userModel.findById(userId);
-    if (!user) return { error: "User not found" }
+// const generateAuthToken = async (userId) => {
+//     const user = await userModel.findById(userId);
+//     if (!user) return { error: "User not found" }
 
-    const token = await user.generateAuthToken();
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None',
-    };
+//     const token = await user.generateAuthToken();
+//     const options = {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === 'production',
+//         sameSite: 'None',
+//     };
 
-    return { options, token };
-};
+//     return { options, token };
+// };
 
 module.exports.registerUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -31,20 +32,20 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
     const existingUser = await userModel.findOne({ email });
     if (existingUser) return res.status(400).json(ApiResponse.error(400, 'User already exist', 'User already exists'));
 
-    const user = await createUser(email, username, telCode, tel, fullname, password);
+    const NewUser = await createUser(email, username, telCode, tel, fullname, password);
 
-    if (!user) return res.
+    if (!NewUser) return res.
         status(500)
         .json(ApiResponse.error(500, 'Error occured while creating creating user', "Internal server error"));
 
-    const { options, token, error } = await generateAuthToken(user._id);
+    const { options, token, error } = await createAuthTokenForUser('User', NewUser._id);
 
     if (error) return res.status(500).json(ApiResponse.error(500, error, "Token generation failed", 'Internal server error'))
 
     return res
         .status(201)
         .cookie('token', token, options)
-        .json(ApiResponse.success(201, { user: user, token }, 'User created successfully'));
+        .json(ApiResponse.success(201, { NewUser, token }, 'User created successfully'));
 });
 
 module.exports.loginUser = asyncHandler(async (req, res) => {
@@ -63,7 +64,7 @@ module.exports.loginUser = asyncHandler(async (req, res) => {
         return res.status(401).json(ApiResponse.error(401, 'Invalid email or password', 'Invalid email or password'));
     }
 
-    const { options, token, error } = await generateAuthToken(user._id);
+    const { options, token, error } = await createAuthTokenForUser('User', user._id);
     if (error) return res.status(500).json(ApiResponse.error(500, 'Token generation failed', 'Internal server error'))
 
     return res

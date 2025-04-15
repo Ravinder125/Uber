@@ -4,21 +4,22 @@ const { validationResult } = require('express-validator');
 const { createCaptain } = require('../services/captain.service');
 const captainModel = require('../models/captain.model');
 const blacklistTokenModel = require('../models/blacklistToken.model');
+const { createAuthTokenForCaptain } = require('../utils/generateToken');
 
-const generateAuthToken = async (captainId) => {
-    const captain = await captainModel.findById(captainId);
-    if (!captain) return { error: 'Captain not found' }
+// const generateAuthToken = async (captainId) => {
+//     const captain = await captainModel.findById(captainId);
+//     if (!captain) return { error: 'Captain not found' }
 
-    const token = await captain.generateAuthToken();
+//     const token = await captain.generateAuthToken();
 
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Lax',
-    };
+//     const options = {
+//         httpOnly: true,
+//         secure: true,
+//         sameSite: 'Lax',
+//     };
 
-    return { options, token };
-};
+//     return { options, token };
+// };
 
 module.exports.registerCaptain = asyncHandler(async (req, res) => {
 
@@ -36,7 +37,7 @@ module.exports.registerCaptain = asyncHandler(async (req, res) => {
 
     const newCaptain = await createCaptain(fullname, email, password, telCode, tel, status, vehicle, location);
 
-    const { options, token, error } = await generateAuthToken(newCaptain._id);
+    const { options, token, error } = await createAuthTokenForCaptain('Captain', newCaptain._id);
     if (error) return res.status(500).json(ApiResponse.error(500, 'Token generation failed', 'Internal server error'))
 
     return res.status(201)
@@ -62,7 +63,7 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
         return res.status(400).json(ApiResponse.error(400, 'Invalid email or password', 'Invalid email or password'));
     }
 
-    const { options, token } = await generateAuthToken(captain._id);
+    const { options, token } = await createAuthTokenForCaptain('Captain', captain._id);
     return res.status(200)
         .cookie('token', token, options)
         .json(ApiResponse.success(200, { captain, token }, 'Captain successfully logged in'));

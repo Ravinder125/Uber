@@ -21,7 +21,6 @@ const UserProtectWrapper = ({ children }) => {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
-                    withCredentials: true
                 });
                 if (response.status === 200) {
                     console.log('User token is valid:', response.data);

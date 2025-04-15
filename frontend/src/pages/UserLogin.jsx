@@ -3,6 +3,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
 import { loginUser } from '../services/user.service';
+import Input from '../components/Input';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
@@ -109,7 +110,7 @@ const UserLogin = () => {
                     alt="uber-logo-captain"
                     className='w-18 self-center'
                 />
-                <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
+                <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
                     <div
                         className="text-gray-500 underline w-fit cursor-pointer"
                         onClick={toggleLoginMethod}
@@ -117,25 +118,20 @@ const UserLogin = () => {
                         Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
                     </div>
                     {loginMethod === 'email' ? (
-                        <div className="flex flex-col  gap-3 justify-center">
-                            {/* Email Section */}
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Enter your email - example@gmail.com"
-                                className="bg-gray-200 rounded-sm p-2 w-full border-gray-300 placeholder:text-gray-800"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            {errors.email && <span className="text-red-500">{errors.email}</span>}
-                        </div>
+                        <Input
+                            label='Email'
+                            type='email'
+                            name='email'
+                            placeholder='Enter your Email'
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            error={errors.email}
+                        />
                     ) : (
-                        <div className="flex gap-3 justify-center">
-                            {/* Phone Section */}
+                        <div className="flex gap-1 justify-center items-center">
                             <select
                                 name="country"
-                                className="w-22 bg-gray-200 rounded-sm text-center"
+                                className=" bg-gray-100 border border-gray-300 rounded-sm text-center h p-3 "
                                 value={formData.telCode}
                                 onChange={handleInputChange}
                                 required
@@ -144,31 +140,27 @@ const UserLogin = () => {
                                     <option key={flag} value={telephoneCodes[flag]}>{flag} {telephoneCodes[flag]}</option>
                                 ))}
                             </select>
-                            <input
+                            <Input
+                                label='Tel'
                                 type="tel"
                                 name="tel"
-                                placeholder="Enter your number - 123-456-7890"
-                                className="bg-gray-200 w-72 rounded-sm p-2 placeholder:text-gray-800"
+                                placeholder="Enter your number"
                                 value={formData.tel}
                                 onChange={handleInputChange}
-                                required
+                                error={errors.tel}
                             />
-                            {errors.tel && <span className="text-red-500">{errors.tel}</span>}
                         </div>
                     )}
-                    <div className='flex flex-col gap-2'>
-                        {/* Password Sectin */}
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password - paglu123@"
-                            className="bg-gray-200 rounded-sm p-2 w-full placeholder:text-gray-800"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        {errors.password && <span className="text-red-500">{errors.password}</span>}
-                    </div>
+                    {/* Password Sectin */}
+                    <Input
+                        label='Password'
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        error={errors.password}
+                    />
                     <div>
                         {errors.submit && <span className="text-red-500 text-base">{errors.submit}</span>}
                     </div>
