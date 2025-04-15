@@ -12,6 +12,8 @@ import CaptainLogout from '../pages/CaptainLogout.jsx'
 import UserDashboard from '../pages/UserDashboard'
 import UserProtectWrapper from '../pages/UserProtectWrapper.jsx'
 import CaptainProtectWrapper from '../pages/CaptainProtectWrapper.jsx'
+import Riding from '../pages/Riding.jsx'
+
 
 
 
@@ -46,6 +48,12 @@ const AppRoutes = () => {
                     </CaptainProtectWrapper>
                 } />
                 <Route path='/dashboard' element={<UserDashboard />} />
+                <Route path='/riding' element={
+                    <UserProtectWrapper>
+                        <Riding />
+                    </UserProtectWrapper>
+                }
+                />
             </Routes >
         </div>
     )

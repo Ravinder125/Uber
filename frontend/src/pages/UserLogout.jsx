@@ -1,42 +1,43 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser } from '../services/user.service'
+import Loading from '../features/Loading'
 
 const UserLogout = () => {
     const navigate = useNavigate();
 
-    const handleLogout = async () => {
 
-        const token = localStorage.getItem('user-token');
-        if (!token) {
-            alert('No token found. Redirecting to login page.');
-            return navigate('/login');
+    useEffect(() => {
+        const handleLogout = async () => {
 
-        }
-        try {
-            const response = await logoutUser();
-            if (response.status === 200) {
-                console.log('User successfully logged out:', response.data);
-                localStorage.removeItem('user-token');
-                navigate('/login'); // Redirecting to login page after successful logout
+            const token = localStorage.getItem('user-token');
+            if (!token) {
+                alert('No token found. Redirecting to login page.');
+                return navigate('/login');
+
             }
-        } catch (error) {
-            console.log('Error logging out:', error);
-            localStorage.removeItem('user-token');
+            try {
+                const response = await logoutUser();
+                if (response.status === 200) {
+                    console.log('User successfully logged out:', response.data);
+                    localStorage.removeItem('user-token');
+                    navigate('/login'); // Redirecting to login page after successful logout
+                }
+            } catch (error) {
+                console.log('Error logging out:', error);
+                localStorage.removeItem('user-token');
 
-            const errorMessage = error.response?.data?.message || 'An error occurred during logout'
-            alert(errorMessage);
-
-            // Redirecting to login page if an error occurs
-            navigate('/login')
+                const errorMessage = error.response?.data?.message || 'An error occurred during logout'
+                console.warn(errorMessage)
+                // Redirecting to login page if an error occurs
+                navigate('/login')
+            }
         }
-
-    }
+        handleLogout()
+    }, [])
     return (
-        <div>
-            <button onClick={handleLogout} className='absolute right-[50%] bottom-[50%] bg-black text-white rounded-lg text-xl font-semibold py-3 px-5' type="button">Logout</button>
-        </div>
+        <Loading />
     )
 }
 export default UserLogout;

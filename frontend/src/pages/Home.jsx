@@ -5,6 +5,7 @@ import VehiclePanel from '../components/VehiclePanel';
 import ComfirmRide from '../components/ComfirmRide';
 import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     const [pickup, setPickup] = useState('');
@@ -35,6 +36,9 @@ const Home = () => {
                 className="w-18 absolute left-5 top-5 z-20"
             />
 
+            <Link to='/logout' className='fixed top-3 right-0 text-3xl bg-white rounded-full w-11 h-10 flex items-center justify-center'>
+                <i class="ri-logout-box-r-line"></i>
+            </Link>
             {/* Background Map */}
             <div className="h-screen"><img src="./map.gif" alt="map" className="w-full h-full object-cover" /></div>
 
@@ -93,7 +97,7 @@ const Home = () => {
                 <div className={`fixed z-15 transition-all duration-500 ease-in-out w-full bg-white h-[75%] left-0 ${vehicleFound ? 'bottom-0' : '-bottom-200'}`}  >
                     <LookingForDriver vehicleFound={{ vehicleFound, setVehicleFound }} setComfirmRide={{ setComfirmRide }} />
                 </div>
-                <div className={`fixed hidden z-15 bottom-0 transtion-all duration-500 ease-in-out w-full bg-white h-[90%] left-0`}>
+                <div className={`fixed hidden  z-15 bottom-0 transtion-all duration-500 ease-in-out w-full bg-white h-[90%] left-0`}>
                     <WaitingForDriver />
                 </div>
             </div>
