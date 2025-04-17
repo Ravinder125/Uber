@@ -31,7 +31,6 @@ const CaptainProtectWrapper = ({ children }) => {
             } catch (error) {
                 console.error('Error validating captain token:', error);
                 const errorMessage = error.response?.data?.message || "An error occurred";
-                alert(errorMessage);
                 localStorage.removeItem('captain-token');
 
                 // Redirecting to captain login page if an error occurs

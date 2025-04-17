@@ -103,7 +103,7 @@ const UserLogin = () => {
     };
 
     return (
-        <div className='p-6 h-screen flex items-center justify-center'>
+        <div className='min-h-screen flex items-center justify-center'>
             <div className="p-6 w-96 flex sm:bg-gray-100 justify-center gap-10 flex-col ">
                 <img
                     src="./uber-logo.png"
@@ -112,7 +112,7 @@ const UserLogin = () => {
                 />
                 <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
                     <div
-                        className="text-gray-500 underline w-fit cursor-pointer"
+                        className="text-blue-800 font-medium cursor-pointer self-start"
                         onClick={toggleLoginMethod}
                     >
                         Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
@@ -128,10 +128,10 @@ const UserLogin = () => {
                             error={errors.email}
                         />
                     ) : (
-                        <div className="flex gap-1 justify-center items-center">
+                        <div className="flex gap-2 justify-between items-center">
                             <select
                                 name="country"
-                                className=" bg-gray-100 border border-gray-300 rounded-sm text-center h p-3 "
+                                className="border border-gray-300 rounded-sm text-center p-2 "
                                 value={formData.telCode}
                                 onChange={handleInputChange}
                                 required

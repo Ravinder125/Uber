@@ -14,18 +14,17 @@ const Input = ({
     const isFocused = focus || value
 
     return (
-        <div>
-
+        <div className='w-full'>
             <div
-                className={`relative  rounded-md p-3 bg-gray-100 transition-all duration-300 shadow-md
-                    ${focus ? 'ring-2 ring-blue-500 shadow-md' : 'ring-1 ring-gray-300'} 
+                className={`relative w-full rounded-md p-2 transition-all duration-300 shadow-md bg-white
+                    ${focus ? 'ring-2 ring-blue-500' : 'ring-1 ring-gray-300'}
                     ${error ? 'ring-red-500' : ''}`}
             >
                 <label
                     htmlFor={label}
                     className={`absolute left-1 px-1 transition-all duration-300 pointer-events-none 
-                        bg-gray-100 rounded-sm 
-                        ${isFocused ? '-top-3 text-xs text-blue-600 scale-90' : 'top-4 text-gray-600'}`}
+                         rounded-sm bg-white
+                        ${isFocused ? '-top-3 text-xs text-blue-600 scale-90' : 'top-2 text-gray-600'}`}
                     style={{ transformOrigin: 'left' }}
                 >
                     {placeholder}

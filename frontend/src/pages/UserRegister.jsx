@@ -116,10 +116,7 @@ const UserSignup = () => {
 
         try {
             setFormData(updatedFormData);
-            console.log('Updated Form Data:', updatedFormData);
-
             const response = await registerUser(updatedFormData);
-
             if (response.status === 201) {
                 const { token, user } = response.data.data;
                 localStorage.setItem('user-token', token);
@@ -138,23 +135,12 @@ const UserSignup = () => {
         }
     };
     return (
-        <div className='flex h-screen justify-center items-center'>
+        <div className='flex min-h-screen justify-center items-center'>
             <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-10 justify-center items-center">
                 <img src="./uber-logo.png" alt="uber-logo-captain" className='w-18' />
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-                    {/* Email Section */}
-                    <Input
-                        label='Email'
-                        type='email'
-                        name='email'
-                        placeholder='Enter your Email'
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
-
-                    {/* Name Section */}
+                    {/* Name input */}
                     <div className='flex flex-col gap-1'>
                         <div className='flex gap-2'>
                             {['firstname', 'middlename', 'lastname'].map((name) => (
@@ -167,6 +153,7 @@ const UserSignup = () => {
                                     value={formData.fullname[name]}
                                     required={name !== 'middlename' ? true : false}  // Middle name is optional
                                     onChange={handleInputChange}
+                                    error={errors[name]}
                                 />
                             ))}
                         </div>
@@ -175,21 +162,32 @@ const UserSignup = () => {
                             {errors.lastname && <div className='text-red-600 text-sm'>{errors.lastname}</div>}
                         </>
                     </div>
+                    {/* Email input */}
+                    <Input
+                        label='Email'
+                        type='email'
+                        name='email'
+                        placeholder='Enter your Email'
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        error={errors.email}
+                    />
 
-                    {/* Phone Section */}
+
+                    {/* Phone input */}
 
                     <div className="flex flex-col gap-2 ">
                         <div className="flex gap-2">
                             <select
                                 name="country"
-                                className=" bg-gray-100 border border-gray-300 rounded-sm text-center p-3 "
+                                className="border border-gray-300 rounded-sm text-center p-2 "
                                 value={formData.telCode}
                                 onChange={handleInputChange}
                                 required
                             >
-                                {Object.keys(telephoneCodes).map((flag) => (
-                                    <option key={flag} value={telephoneCodes[flag]}>
-                                        {flag} {telephoneCodes[flag]}
+                                {Object.entries(telephoneCodes).map(([flag, code]) => (
+                                    <option key={flag} value={code}>
+                                        {flag} {code}
                                     </option>
                                 ))}
                             </select>
@@ -205,7 +203,7 @@ const UserSignup = () => {
                         </div>
                         {errors.tel && <div className='text-red-600 text-sm'>{errors.tel}</div>}
                     </div>
-                    {/* Password Section */}
+                    {/* Password input */}
                     <Input
                         label='Password'
                         type="password"

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { registerCaptain } from '../services/captain.service';
+import Input from '../components/Input';
 
 const CaptainRegister = () => {
     const [formData, setFormData] = useState({
@@ -153,7 +154,7 @@ const CaptainRegister = () => {
 
             navigate('/captain-login');
         } catch (error) {
-            console.log('Error:', error);
+            console.error('Error:', error);
             const errorMessage = error.response?.data?.message || "An error occurred";
             alert(errorMessage);
 
@@ -164,52 +165,52 @@ const CaptainRegister = () => {
     };
 
     return (
-        <div className='flex h-screen justify-center items-center'>
-            <div className="p-6 w-96 sm:bg-gray-100 flex flex-col rounded-sm gap-5 ">
-                <img src="./uber-logo.png" alt="uber-logo" className='w-18 self-center' />
+        <div className="flex min-h-screen justify-center items-center bg-gray-50">
+            <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md flex flex-col gap-6">
+                <img src="./uber-logo.png" alt="uber-logo" className="w-24 mx-auto" />
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* Personal Details Section */}
-                    <div className='flex flex-col gap-2'>
-                        <label className="font-semibold text-lg">Personal Details</label>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    {/* Personal Details */}
+                    <div className="flex flex-col gap-3">
+                        <label className="text-lg font-semibold">Personal Details</label>
 
-                        {/* Name inputs */}
-                        <div className='flex gap-2'>
-                            {['firstname', 'middlename', 'lastname'].map(field => (
-                                <input
-                                    key={field}
+                        {/* Full Name */}
+                        <div className="flex gap-2">
+                            {['firstname', 'middlename', 'lastname'].map((name) => (
+                                <Input
+                                    key={name}
                                     type="text"
-                                    name={field}
-                                    placeholder={`${field}`}
-                                    value={formData.fullname[field]}
+                                    name={name}
+                                    placeholder={name}
+                                    className="w-1/3 p-2 rounded-md bg-gray-100"
+                                    value={formData.fullname[name]}
+                                    required={name !== 'middlename'}
                                     onChange={handleInputChange}
-                                    className='bg-gray-200 p-2 rounded-sm w-1/2'
-                                    required={field !== 'middlename'}
+                                    error={errors[name]}
                                 />
                             ))}
                         </div>
                         {errors.firstname && <span className="text-red-500 text-sm">{errors.firstname}</span>}
                         {errors.lastname && <span className="text-red-500 text-sm">{errors.lastname}</span>}
 
-                        {/* Email input */}
-                        <input
+                        {/* Email */}
+                        <Input
+                            label="Email"
                             type="email"
                             name="email"
-                            placeholder='Enter your email'
+                            placeholder="Enter your email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className='bg-gray-200 p-2 rounded-sm'
-                            required
+                            error={errors.email}
                         />
-                        {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
 
-                        {/* Phone input */}
-                        <div className='flex gap-2'>
+                        {/* Phone */}
+                        <div className="flex gap-2">
                             <select
-                                name='telCode'
+                                name="telCode"
                                 value={formData.telCode}
                                 onChange={handleInputChange}
-                                className='bg-gray-200 p-2 rounded-sm w-1/4'
+                                className="w-1/3 p-2 rounded-md bg-gray-100 border border-gray-300"
                             >
                                 {Object.entries(telephoneCodes).map(([flag, code]) => (
                                     <option key={code} value={code}>
@@ -217,64 +218,57 @@ const CaptainRegister = () => {
                                     </option>
                                 ))}
                             </select>
-                            <input
+                            <Input
+                                label="Phone"
                                 type="tel"
                                 name="tel"
-                                placeholder='Phone number'
+                                placeholder="Enter your phone"
                                 value={formData.tel}
                                 onChange={handleInputChange}
-                                className='bg-gray-200 p-2 rounded-sm w-9/12'
-                                required
+                                error={errors.tel}
                             />
                         </div>
                         {errors.tel && <span className="text-red-500 text-sm">{errors.tel}</span>}
 
-                        {/* Password input */}
-                        <input
+                        {/* Password */}
+                        <Input
+                            label="Password"
                             type="password"
                             name="password"
-                            placeholder='Enter your password'
+                            placeholder="Enter your password"
                             value={formData.password}
                             onChange={handleInputChange}
-                            className='bg-gray-200 p-2 rounded-sm'
-                            required
+                            error={errors.password}
                         />
-                        {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
                     </div>
 
-                    {/* Vehicle Details Section */}
-                    <div className='flex flex-col gap-2'>
-                        <label className="font-semibold text-lg">Vehicle Details</label>
+                    {/* Vehicle Details */}
+                    <div className="flex flex-col gap-3">
+                        <label className="text-lg font-semibold">Vehicle Details</label>
 
-                        {/* Vehicle color */}
-                        <input
+                        <Input
+                            label="Vehicle Color"
                             type="text"
                             name="vehicle.color"
-                            placeholder="Vehicle Color"
+                            placeholder="Vehicle color"
                             value={formData.vehicle.color}
                             onChange={handleInputChange}
-                            className='bg-gray-200 p-2 rounded-sm'
-                            required
+                            error={errors.vehicle.color}
                         />
-                        {errors.vehicle.color && <span className="text-red-500 text-sm">{errors.vehicle.color}</span>}
-
-                        {/* Vehicle type and plate number */}
-                        <input
+                        <Input
+                            label="Vehicle Plate"
                             type="text"
                             name="vehicle.plate"
-                            placeholder="Vehicle Plate Number"
+                            placeholder="Vehicle plate"
                             value={formData.vehicle.plate}
                             onChange={handleInputChange}
-                            className='bg-gray-200 p-2 rounded-sm'
-                            required
+                            error={errors.vehicle.plate}
                         />
-                        {errors.vehicle.plate && <span className="text-red-500 text-sm">{errors.vehicle.plate}</span>}
-
                         <select
                             name="vehicle.type"
                             value={formData.vehicle.type}
                             onChange={handleInputChange}
-                            className='bg-gray-200 p-2 rounded-sm'
+                            className="p-2 rounded-md bg-gray-100 border border-gray-300 text-gray-700"
                             required
                         >
                             <option value="car">Car</option>
@@ -284,31 +278,31 @@ const CaptainRegister = () => {
                         </select>
                     </div>
 
-                    {errors.submit && (
-                        <div className="text-red-500 text-sm text-center">{errors.submit}</div>
-                    )}
-                    <div className='flex flex-col'>
+                    {errors.submit && <div className="text-red-500 text-center text-sm">{errors.submit}</div>}
 
-                        {/* Submit button */}
-                        <button type="submit" className="bg-black text-white py-2 rounded-sm font-bold">
+                    {/* Submit & Link */}
+                    <div className="flex flex-col gap-2">
+                        <button type="submit" className="bg-black text-white py-2 rounded-md font-semibold hover:bg-gray-900 transition">
                             Register as Captain
                         </button>
 
-                        {/* Login link */}
-                        <Link to='/captain-login' className='mt-2 text-center text-sm'>
-                            Already a captain? <span className='text-blue-500'>Login here</span>
+                        <Link to="/captain-login" className="text-center text-sm text-blue-600 hover:underline">
+                            Already a captain? <span className="font-medium">Login here</span>
                         </Link>
-
                     </div>
                 </form>
 
-                {/* User Register Link */}
-                <Link to='/register' className='bg-green-700 text-white text-xl w-full text-center py-2 rounded-lg font-bold'>
+                {/* Register as User */}
+                <Link
+                    to="/register"
+                    className="mt-4 bg-green-600 text-white text-center py-2 rounded-md font-bold hover:bg-green-700 transition"
+                >
                     Register as User
                 </Link>
             </div>
         </div>
     );
+
 };
 
 export default CaptainRegister;

@@ -2,7 +2,7 @@ import React from 'react'
 
 const WaitingForDriver = () => {
     return (
-        <div className='bg-white'>
+        <div className='bg-white '>
             <h5
                 className="text-2xl transition-all duration-500 ease-in-out hover:bg-gray-200 w-fit rounded-full px-4 py-2 cursor-pointer"
             >
@@ -14,7 +14,7 @@ const WaitingForDriver = () => {
                     <h4>2 <br /> min</h4>
                 </div>
             </div>
-            <div className='flex flex-col gap-5 border-b border-gray-200 py-2'>
+            <div className='flex flex-col gap-10 border-b border-gray-200 py-2'>
                 <div className='flex p-3 justify-between text-end items-center'>
                     <div className='flex  '>
                         <img src="./driver.jpg" alt="man" className='w-15 h-15 z-3 object-cover rounded-full border-gray' />

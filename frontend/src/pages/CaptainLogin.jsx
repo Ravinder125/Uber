@@ -4,10 +4,11 @@ import { CaptainDataContext } from '../context/CaptainContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginCaptain } from '../services/captain.service';
 import Loading from '../features/Loading';
+import Input from '../components/Input'
 
 
 const CaptainLogin = () => {
-    const [FormData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         email: '',
         telCode: '',
         tel: '',
@@ -58,8 +59,8 @@ const CaptainLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const loginData = loginMethod === 'email'
-            ? { email: FormData.email, password: FormData.password }
-            : { phoneNumber: FormData.telCode + FormData.tel, password: FormData.password };
+            ? { email: formData.email, password: formData.password }
+            : { phoneNumber: formData.telCode + formData.tel, password: formData.password };
 
         try {
             setIsLoading(true);
@@ -68,13 +69,14 @@ const CaptainLogin = () => {
             if (response.status === 200) {
                 const { token, captain } = response.data.data;
                 setCaptain(captain);
+                console.log(response.data)
                 localStorage.setItem('captain-token', token);
                 navigate('/captain-home');
             }
 
         }
         catch (error) {
-            console.log('Error:', error);
+            console.error('Error:', error);
             const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again.';
             alert(errorMessage);
         } finally {
@@ -92,7 +94,7 @@ const CaptainLogin = () => {
         )
     }
     return (
-        <div className="flex h-screen justify-center items-center">
+        <div className="flex min-h-screen justify-center items-center">
             <div className="p-6 w-96 sm:bg-gray-100 flex flex-col gap-10">
                 <img
                     src="./uber-logo.png"
@@ -101,33 +103,28 @@ const CaptainLogin = () => {
                 />
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div
-                        className="text-gray-500 underline cursor-pointer self-start"
+                        className="text-blue-800 font-bold cursor-pointer self-start"
                         onClick={loginMethodEmailToNumber}
                     >
                         Login with {loginMethod === 'email' ? 'phone number' : 'email'}?
                     </div>
                     {loginMethod === 'email' ? (
-                        <div className="flex flex-col gap-2">
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Enter your email"
-                                className="bg-gray-200 rounded-sm p-2 w-full"
-                                value={FormData.email}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            {errors.email && (
-                                <div className="text-red-500 text-sm">{errors.email}</div>
-                            )}
-                        </div>
+                        <Input
+                            label='Email'
+                            type='email'
+                            name='email'
+                            placeholder='Enter your Email'
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            error={errors.email}
+                        />
                     ) : (
                         <div className="flex flex-col gap-2">
                             <div className="flex gap-3">
                                 <select
                                     name="telCode"
-                                    className="w-22 bg-gray-200 rounded-sm text-center"
-                                    value={FormData.telCode}
+                                    className="w-22 border border-gray-300 rounded-sm text-center shadow-md"
+                                    value={formData.telCode}
                                     onChange={handleInputChange}
                                     required
                                 >
@@ -137,34 +134,29 @@ const CaptainLogin = () => {
                                         </option>
                                     ))}
                                 </select>
-                                <input
+                                <Input
+                                    label='Tel'
                                     type="tel"
                                     name="tel"
                                     placeholder="Enter your number"
-                                    className="bg-gray-200 w-72 rounded-sm p-2"
-                                    value={FormData.tel}
+                                    value={formData.tel}
                                     onChange={handleInputChange}
-                                    required
+                                    error={errors.tel}
                                 />
                             </div>
-                            {errors.tel && (
-                                <div className="text-red-500 text-sm">{errors.tel}</div>
-                            )}
                         </div>
                     )}
-                    <div className="flex flex-col gap-2">
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            className="bg-gray-200 rounded-sm p-2 w-full"
-                            value={FormData.password}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        {errors.password && (
-                            <div className="text-red-500 text-sm">{errors.password}</div>
-                        )}
+                    <Input
+                        label='Password'
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        error={errors.password}
+                    />
+                    <div>
+                        {errors.submit && <span className="text-red-500 text-base">{errors.submit}</span>}
                     </div>
                     <button
                         type="submit"

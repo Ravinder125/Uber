@@ -22,10 +22,9 @@ module.exports.createAuthTokenForUser = async (userType, userId) => {
 
 module.exports.createAuthTokenForCaptain = async (userType, userId) => {
     try {
-        const user = await userModel.findById(userId);
-        if (!user) return { error: `${userType} not found` };
-
-        const token = await captainModel.generateAuthToken();
+        const captain = await captainModel.findById(userId);
+        if (!captain) return { error: `${userType} not found` };
+        const token = await captain.generateAuthToken();
 
         const options = {
             httpOnly: true,
