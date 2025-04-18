@@ -16,7 +16,7 @@ const CaptainProtectWrapper = ({ children }) => {
         const checkCaptainAuthentication = async () => {
             if (!token) {
                 console.warn('Captain token not found, redirecting to login page');
-                return navigate('/captain-login');
+                navigate('/captain-login');
             }
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auths/is-captain-logged-in`, {
@@ -24,7 +24,6 @@ const CaptainProtectWrapper = ({ children }) => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-
                 if (response.status === 200) {
                     console.log('Captain token is valid:', response.data);
                 }
