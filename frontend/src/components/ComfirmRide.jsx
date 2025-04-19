@@ -42,8 +42,7 @@ const ComfirmRide = (props) => {
                     </h4>
                     <div>
                         <h2 className="font-medium flex">
-                            <i class="ri-money-rupee-circle-line"></i>
-                            <div>193.20</div>
+                            <div>&#8377;193.20</div>
                         </h2>
                         <h3 className="text-gray-600 text-sm">KaiKondrahalli, Bangaluru, Karnataka</h3>
                     </div>

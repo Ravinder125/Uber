@@ -1,7 +1,7 @@
 import React from 'react'
 
 const CaptainDetails = (props) => {
-    const { darkModeEnabled } = props.darkModeEnabled;
+    const darkModeEnabled = props.darkModeEnabled;
     const { comfirmRidePopup, setComfirmRidePopup } = props.comfirmRidePopup;
     return (
         <div className='h-full'>
@@ -20,7 +20,7 @@ const CaptainDetails = (props) => {
                     </div>
                 </div>
             </div>
-            <div className={`flex items-center justify-around text-center bg-gray-200 h-[50%] rounded-lg ${darkModeEnabled ? 'bg-white text-black' : 'bg-gray-200 text-black'}`}>
+            <div className={`flex items-center justify-around text-center h-[50%] rounded-lg ${darkModeEnabled ? 'bg-gray-300 text-black ' : 'bg-yellow-300 text-black'}`}>
                 <div>
                     <i class="ri-timer-2-line text-2xl font-thin"></i>
                     <h3 className='font-medium '>10.2</h3>
