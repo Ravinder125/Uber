@@ -6,7 +6,7 @@ const CaptainSidebar = (props) => {
         <>
             <div className='w-full'>
                 <div className={`flex flex-col gap-5 text-black p-5 relative ${props.darkModeEnabled ? 'bg-gray-200' : 'bg-yellow-300'}`}>
-                    <h4 onClick={() => props.setSidebarVisible(false)} className={`text-xl flex justify-center items-center absolute right-1 top-1 shadow-xl rounded-full w-8 h-8 border border-gray-400 ${props.darkModeEnabled ? 'bg-gray-300' : 'bg-white'}`}>
+                    <h4 onClick={() => props.setSidebarVisible(false)} className={`text-xl flex justify-center items-center absolute right-1 top-1 shadow-xl shadow-yellow-500 rounded-md w-8 h-8}`}>
                         <i className="ri-close-large-fill"></i>
                     </h4>
                     <div className='flex items-center gap-2'>

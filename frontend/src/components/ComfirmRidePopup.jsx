@@ -1,10 +1,12 @@
 import React from 'react'
 
-const RidePopup = (props) => {
+const ComfirmRidePopup = (props) => {
     const darkModeEnabled = props.darkModeEnabled
     const { comfirmRidePopup, setComfirmRidePopup } = props.comfirmRidePopup
+
     return (
-        <div className={`flex border flex-col gap-3 items-center w-[90%] overflow-y-auto shadow-xl rounded-lg ${comfirmRidePopup ? 'bg-gray-800' : 'bg-gray-900'} ${darkModeEnabled ? 'bg-gray-800 text-white border-gray-900' : 'bg-white text-black border-gray-300'}`}>
+        < div className={`flex h-full w-full border flex-col gap-3 items-center overflow-y-auto shadow-xl rounded-lg ${comfirmRidePopup ? 'bg-gray-800' : 'bg-gray-900'} ${darkModeEnabled ? 'bg-gray-800 text-white border-gray-900' : 'bg-white text-black border-gray-300'}`
+        }>
             <div className='px-2 w-full flex flex-col gap-3'>
                 <div className="text-center w-full flex flex-col items-center">
                     <h5
@@ -13,7 +15,7 @@ const RidePopup = (props) => {
                     >
                         <i className={`ri-arrow-${comfirmRidePopup ? 'down' : 'up'}-wide-line`}></i>
                     </h5>
-                    <h1 className="font-bold text-2xl">New ride available</h1>
+                    <h1 className="font-bold text-2xl">Please Confirm your ride</h1>
                 </div>
                 <div className={`flex p-2 w-full justify-between items-center p-3 rounded-lg  ${darkModeEnabled ? 'bg-gray-300 text-black' : 'bg-yellow-300'}`}>
                     <div className='flex items-center gap-3'>
@@ -57,12 +59,11 @@ const RidePopup = (props) => {
                 </div>
             </div>
             <div className='text-center flex gap-2 mb-5'>
-                <button className='bg-green-700 px-5 font-medium text-xl text-white py-2 rounded-lg mt-2'>Accept</button>
-                <button className={`text-black px-5 font-medium py-2 rounded-lg mt-2 bg-gray-300`}>Ignore</button>
+                <button className='bg-green-700 px-5 font-medium text-xl text-white py-2 rounded-lg mt-2'>Confirm</button>
+                <button onClick={e => setComfirmRidePopup(false)} className={`text-black text-xl px-5 font-medium py-2 rounded-lg mt-2 bg-gray-300`}>cancel</button>
                 {/* ${darkModeEnabled ? 'bg-gray-100' : 'bg-yellow-100'} */}
             </div>
-        </div>
+        </div >
     )
 }
-
-export default RidePopup
+export default ComfirmRidePopup

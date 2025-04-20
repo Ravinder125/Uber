@@ -6,7 +6,7 @@ const CaptainNav = (props) => {
     const { darkModeEnabled, setDarkModeEnabled } = props.darkModeEnabled
     return (
         <>
-            <nav className={`flex z-50 p-3 w-full fixed top-0  text-2xl justify-between items-center font-medium ${darkModeEnabled ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+            <nav className={`flex z-50 border-b border-gray-300 p-3 w-full fixed top-0  text-2xl justify-between items-center font-medium ${darkModeEnabled ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
                 <div className={`absolute top-0 -left-full w-[80%] text-lg z-50 rounded-md   flex flex-col justify-center gap-2 transition-all duration-800 ease-in-out ${darkModeEnabled ? 'bg-gray-800 text-white shadow-md shadow-gray-800 border border-gray-900' : 'bg-white text-gray-700 border border-gray-300 shadow-md'} ${sidebarVisible ? 'left-0' : '-left-full'}`} >
                     <CaptainSidebar setSidebarVisible={setSidebarVisible} darkModeEnabled={darkModeEnabled} />
                 </div>
