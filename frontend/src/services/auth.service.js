@@ -22,3 +22,11 @@ export const isUserLoggedIn = async () => {
     })
     return response;
 }
+
+export const SubmitOtp = async (data) => {
+    const response = await axios.post(`${API_URL}/send-otp`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }, data)
+}

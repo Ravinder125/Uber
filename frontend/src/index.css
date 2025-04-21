@@ -7,4 +7,5 @@ button {
 input::placeholder {
     font-size: small;
     color: gray;
+    font-weight: bold;
 }

@@ -8,8 +8,8 @@ import CaptainNav from '../components/CaptainNav';
 const CaptainHome = () => {
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
     const [sidebarVisible, setSidebarVisible] = useState(false)
-    const [ridePopup, setRidePopup] = useState(false)
-    const [comfirmRidePopup, setComfirmRidePopup] = useState(true)
+    const [ridePopup, setRidePopup] = useState(true)
+    const [comfirmRidePopup, setComfirmRidePopup] = useState(false)
 
 
     useEffect(() => {

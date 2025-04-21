@@ -13,6 +13,7 @@ import UserDashboard from '../pages/UserDashboard'
 import UserProtectWrapper from '../pages/UserProtectWrapper.jsx'
 import CaptainProtectWrapper from '../pages/CaptainProtectWrapper.jsx'
 import Riding from '../pages/Riding.jsx'
+import CaptainRiding from '../pages/CaptainRiding.jsx'
 
 
 
@@ -28,11 +29,6 @@ const AppRoutes = () => {
                         <Home />
                     </UserProtectWrapper>}
                 />
-                <Route path='/captain-home' element={
-                    <CaptainProtectWrapper>
-                        <CaptainHome />
-                    </CaptainProtectWrapper>
-                } />
                 <Route path='/register' element={<UserRegister />} />
                 <Route path='/login' element={<UserLogin />} />
                 <Route path='/logout' element={
@@ -40,6 +36,19 @@ const AppRoutes = () => {
                         <UserLogout />
                     </UserProtectWrapper>}
                 />
+                <Route path='/dashboard' element={<UserDashboard />} />
+                <Route path='/riding' element={
+                    <UserProtectWrapper>
+                        <Riding />
+                    </UserProtectWrapper>
+                }
+                />
+
+                <Route path='/captain-home' element={
+                    <CaptainProtectWrapper>
+                        <CaptainHome />
+                    </CaptainProtectWrapper>
+                } />
                 <Route path='/captain-register' element={<CaptainRegister />} />
                 <Route path='/captain-login' element={<CaptainLogin />} />
                 <Route path='/captain-logout' element={
@@ -47,11 +56,10 @@ const AppRoutes = () => {
                         <CaptainLogout />
                     </CaptainProtectWrapper>
                 } />
-                <Route path='/dashboard' element={<UserDashboard />} />
-                <Route path='/riding' element={
-                    <UserProtectWrapper>
-                        <Riding />
-                    </UserProtectWrapper>
+                <Route path='/captain-riding' element={
+                    <CaptainProtectWrapper>
+                        <CaptainRiding />
+                    </CaptainProtectWrapper>
                 }
                 />
             </Routes >

@@ -1,46 +1,22 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Input from './Input'
+import { Link } from 'react-router-dom'
 
-const ComfirmRidePopup = (props) => {
-    const darkModeEnabled = props.darkModeEnabled
-    const { comfirmRidePopup, setComfirmRidePopup } = props.comfirmRidePopup
-    const [otp, setOtp] = useState('')
-    const [error, setError] = useState('')
+const FinishRide = (props) => {
+    const { finishRidePannel, setFinishRidePannel } = props.finishRidePannel
+    const { darkModeEnabled, setDarkModeEnabled } = props.darkModeEnabled
 
-    const validateOtp = (e) => {
-        const value = e.target.value
-        console.log(value)
-
-        if (value === '') {
-            return;
-        } else if (value.length > 6) {
-            setError('Otp must not exceed 6 characters')
-        } else if (value.length < 4) {
-            setError('Otp must be at least 4 characters long')
-        } else {
-            setError('')
-            setOtp(value)
-        }
-
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        
-    }
     return (
-        < div className={`flex h-full w-full border flex-col gap-3 items-center overflow-y-auto shadow-xl rounded-lg ${comfirmRidePopup ? 'bg-gray-800' : 'bg-gray-900'} ${darkModeEnabled ? 'bg-gray-800 text-white border-gray-900' : 'bg-white text-black border-gray-300'}`
-        }>
+        < div className={`flex h-full w-full border flex-col gap-3 items-center overflow-y-auto shadow-xl rounded-lg ${finishRidePannel ? 'bg-gray-800' : 'bg-yellow-300 border-none'} ${darkModeEnabled ? 'bg-gray-800 text-white border-gray-900' : 'bg-white text-black border-gray-300'}`}>
             <div className='px-2 w-full flex flex-col gap-3'>
                 <div className="text-center w-full flex flex-col items-center">
                     <h5
-                        className="text-3xl transition-all duration-500 ease-in-out hover:bg-gray-200 w-fit rounded-full px-4 py-2 cursor-pointer"
-                        onClick={e => setComfirmRidePopup(prev => !prev)}
+                        className={`text-4xl transition-all duration-500 ease-in-out hover:bg-gray-200 w-fit rounded-full px-4 py-2 cursor-pointer ${!finishRidePannel ? 'text-black' : 'text-gray-400'}`}
+                        onClick={e => setFinishRidePannel(prev => !prev)}
                     >
-                        <i className={`ri-arrow-${comfirmRidePopup ? 'down' : 'up'}-wide-line`}></i>
+                        <i className={`ri-arrow-${finishRidePannel ? 'down' : 'up'}-wide-line`}></i>
                     </h5>
-                    <h1 className="font-bold text-2xl">Please Confirm your ride</h1>
+                    <h1 className="font-bold text-2xl">Confirm this ride to Start</h1>
                 </div>
                 <div className={`flex p-2 w-full justify-between items-center p-3 rounded-lg  ${darkModeEnabled ? 'bg-gray-300 text-black' : 'bg-yellow-300'}`}>
                     <div className='flex items-center gap-3'>
@@ -83,23 +59,12 @@ const ComfirmRidePopup = (props) => {
                     </div>
                 </div>
             </div>
-            <div className='text-center flex flex-col w-11/14 mb-5'>
-                <form onSubmit={handleSubmit}>
-                    <Input
-                        label='Otp'
-                        type="otp"
-                        name="otp"
-                        placeholder="Enter Otp"
-                        value={otp}
-                        onChange={e => setOtp(e.target.value)}
-                        error={error}
-                    />
-                </form>
-                <Link to='/captain-riding' className='bg-green-700 px-5 font-medium text-xl text-white py-2 rounded-lg mt-2'>Confirm</Link>
-                <button onClick={e => setComfirmRidePopup(false)} className={`text-black text-xl px-5 font-medium py-2 rounded-lg mt-2 bg-gray-300`}>cancel</button>
-                {/* ${darkModeEnabled ? 'bg-gray-100' : 'bg-yellow-100'} */}
+            <div className='text-center px-5 flex flex-col w-full mb-5'>
+                <Link to='/captain-riding' className='bg-green-700 py-3 font-medium text-xl text-white py-2 rounded-lg mt-2'>Complete</Link>
+                <p className='text-xs mt-2'><span className='text-blue-800'>Note : </span>Click on the complete button if you have received the payment</p>
             </div>
         </div >
     )
 }
-export default ComfirmRidePopup
+
+export default FinishRide
